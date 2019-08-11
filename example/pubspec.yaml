@@ -1,8 +1,8 @@
 name: flutter_gen_sample_plugin
 description: A new Flutter plugin.
 version: 0.0.1
-author:
-homepage:
+author: Júlio Cesar Bueno Cotta <juliocbcotta@gmail.com>
+homepage: https://github.com/BugsBunnyBR/plugin_gen.flutter
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -10,12 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  base_plugin:
-    path: ../base_plugin
+  flutter_plugin_annotations:
+    path: ../flutter_plugin_annotations
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   build_runner: ^1.0.0
 
   flutter_plugin_generator:

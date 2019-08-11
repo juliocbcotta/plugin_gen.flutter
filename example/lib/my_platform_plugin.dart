@@ -1,4 +1,4 @@
-import 'package:base_plugin/base_plugin.dart';
+import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 

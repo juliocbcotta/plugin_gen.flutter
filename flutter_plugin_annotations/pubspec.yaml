@@ -1,8 +1,8 @@
-name: base_plugin
+name: flutter_plugin_annotations
 description: Some package.
 version: 0.0.1
-author: Júlio Cotta <juliocbcotta@gmail.com>
-homepage: https://github.com/
+author: Júlio Cesar Bueno Cotta <juliocbcotta@gmail.com>
+homepage: https://github.com/BugsBunnyBR/plugin_gen.flutter
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"

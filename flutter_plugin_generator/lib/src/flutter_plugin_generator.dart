@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:base_plugin/base_plugin.dart';
+import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
