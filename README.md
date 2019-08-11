@@ -9,8 +9,7 @@ pubspec.yaml of your plugin
 dependencies:
   flutter:
     sdk: flutter
-  flutter_plugin_annotations:
-    path: ../flutter_plugin_annotations
+  flutter_plugin_annotations: ^0.0.1
     
     
 dev_dependencies:
@@ -19,8 +18,7 @@ dev_dependencies:
     
   build_runner: ^1.0.0
 
-  flutter_plugin_generator:
-    path: ../flutter_plugin_generator
+  flutter_plugin_generator: ^0.0.1
 ```
 
 In your plugins folder
