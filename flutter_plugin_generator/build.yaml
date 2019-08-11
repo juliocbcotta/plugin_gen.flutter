@@ -1,0 +1,15 @@
+targets:
+  $default:
+    builders:
+      flutter_plugin_generator|base_plugin:
+        enabled: true
+
+builders:
+  flutter_plugin_builder:
+    target: ":flutter_plugin_generator"
+    import: "package:flutter_plugin_generator/builder.dart"
+    builder_factories: ["flutterPluginBuilder"]
+    build_extensions: {".dart": ["flutter_plugin.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

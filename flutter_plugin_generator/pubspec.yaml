@@ -1,0 +1,24 @@
+name: flutter_plugin_generator
+description: Flutter Plugin generation.
+version: 0.0.1
+author: Júlio Cotta <juliocbcotta@gmail.com>
+homepage: https://github.com/
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  build: ^1.0.2
+  source_gen: ^0.9.3
+  base_plugin:
+    path: ../base_plugin
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_test: ^0.10.4
+  build_runner: ^1.1.2
+
+flutter:

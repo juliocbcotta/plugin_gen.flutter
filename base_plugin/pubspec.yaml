@@ -1,0 +1,18 @@
+name: base_plugin
+description: Some package.
+version: 0.0.1
+author: Júlio Cotta <juliocbcotta@gmail.com>
+homepage: https://github.com/
+
+environment:
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
