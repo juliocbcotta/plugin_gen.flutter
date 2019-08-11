@@ -25,6 +25,8 @@ You can watch the changes with:
 `flutter pub run build_runner watch --delete-conflicting-outputs`
 
 
+In the snipshot below we have a simple plugin declararion and the generated code.
+
 
 ``` dart
 part 'my_platform_plugin.g.dart';
