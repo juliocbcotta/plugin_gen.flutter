@@ -7,17 +7,11 @@ pubspec.yaml of your plugin
 
 ``` yaml
 dependencies:
-  flutter:
-    sdk: flutter
   flutter_plugin_annotations: ^0.0.1
     
     
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-    
   build_runner: ^1.0.0
-
   flutter_plugin_generator: ^0.0.1
 ```
 
