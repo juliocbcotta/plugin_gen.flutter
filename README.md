@@ -7,20 +7,12 @@ pubspec.yaml of your plugin
 
 ``` yaml
 dependencies:
-  flutter:
-    sdk: flutter
-  flutter_plugin_annotations:
-    path: ../flutter_plugin_annotations
+  flutter_plugin_annotations: ^0.0.1
     
     
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-    
   build_runner: ^1.0.0
-
-  flutter_plugin_generator:
-    path: ../flutter_plugin_generator
+  flutter_plugin_generator: ^0.0.1
 ```
 
 In your plugins folder
@@ -32,6 +24,8 @@ You can watch the changes with:
 
 `flutter pub run build_runner watch --delete-conflicting-outputs`
 
+
+In the snipshot below we have a simple plugin declararion and the generated code.
 
 
 ``` dart
