@@ -1,5 +1,38 @@
 # plugin_gen.flutter
-A library to generate the flutter dart code for your plugin.
+A library to generate the flutter code for your plugin.
+
+## How to use
+
+pubspec.yaml of your plugin
+
+``` yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_plugin_annotations:
+    path: ../flutter_plugin_annotations
+    
+    
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+    
+  build_runner: ^1.0.0
+
+  flutter_plugin_generator:
+    path: ../flutter_plugin_generator
+```
+
+In your plugins folder
+
+`flutter pub run build_runner build --delete-conflicting-outputs`
+
+This will generate the concrete implementation of your annotated class.
+You can watch the changes with:
+
+`flutter pub run build_runner watch --delete-conflicting-outputs`
+
+
 
 ``` dart
 part 'my_platform_plugin.g.dart';
@@ -7,6 +40,10 @@ part 'my_platform_plugin.g.dart';
 @MethodCallPlugin(channelName: "my channel name")
 abstract class MyPlatformPlugin {
   Future<String> receiveString();
+  
+  static MyPlatformPlugin create() {
+    return _$MyPlatformPlugin();
+  }
 }
 
 ###################### my_platform_plugin.g.dart ################################
@@ -38,7 +75,23 @@ Refer to the example folder, there you will find a plugin project.
 It can use an abstract class and its methods to generate a concrete implementation for your plugin.
 
 ## What are the restrictions?
-Your models will need to have a factory `formJson(Map<String, dynamic> map)` and a method `Map<String, dynamic> toJson()`. They will be used in the serialization/deserialization of your data.
+
+### Plugin class
+* Plugin class should be `abstract`.
+* Only methods with return type `Future<*>` will have an implementation generated.
+* Only one `MethodChannel` per class.
+* `MethodChannel` instanted in the constructor of the generated class.
+* A factory for the concrete implementation is not allowed at the moment.
+#### NOTE: Use an static method in the abstract plugin class to encapsulate the instantiation.
+
+``` dart
+  static MyPlatformPlugin create() {
+    return _$MyPlatformPlugin();
+  }
+```
+
+### Models (for return and for parameters)
+Your models will need to have a factory `fromJson(Map<String, dynamic> map)` and a method `Map<String, dynamic> toJson()`. They will be used in the serialization/deserialization of your data.
 
 Something like : 
 
@@ -59,8 +112,6 @@ class MyData {
 }
 
 ```
-
-
 
 ## What are the supported data types?
 Maps and lists of primitive types and of classes that don't use generics are allowed.
@@ -105,12 +156,18 @@ Sample of llowed data types:
 
 :exclamation: `Map<*,Map<>>`
 
+### Classes with generics are **NOT** supported
+
+:exclamation: `MyGenericData<T>`
+
+
 PRs are welcome!
 
 
 ## TODO
-
+- document code
 - annotation for AndroidOnly and IOSOnly methods
 - annotation for EventChannel in methods
-- enable static channel
+- allow static channel
+- allow singleton
 - tests
