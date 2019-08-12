@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// This annotation class is going to be used to generate a concrete implementation of a plugin that has
 /// a [MethodChannel] instance.
