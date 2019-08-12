@@ -9,9 +9,7 @@ part 'my_test_plugin.g.dart';
   SupportedPlatform.IOS,
   SupportedPlatform.Android,
 ])
-@MethodCallPlugin(
-  channelName: "my channel name"
-)
+@MethodCallPlugin(channelName: "my channel name")
 abstract class MyTestPlugin {
   @SupportedPlatforms(only: [
     SupportedPlatform.IOS,
