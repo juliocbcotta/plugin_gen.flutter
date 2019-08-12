@@ -1,3 +1,7 @@
+## [0.0.5]
+
+- Added support to filter which platforms the plugin has support.
+
 ## [0.0.4]
 
 - Removed Flutter dependency.

@@ -5,9 +5,15 @@ import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 
 part 'my_platform_plugin.g.dart';
 
+@SupportedPlatforms(only: [
+  SupportedPlatform.IOS,
+  SupportedPlatform.Android,
+])
 @MethodCallPlugin(channelName: "my channel name")
 abstract class MyPlatformPlugin {
-  @SupportedPlatforms(only: [SupportedPlatform.IOS])
+  @SupportedPlatforms(only: [
+    SupportedPlatform.IOS,
+  ])
   Future<String> failToReceiveStringOnAnythingOtherThanIOS();
 
   Future<String> receiveString();

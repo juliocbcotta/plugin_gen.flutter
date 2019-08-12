@@ -1,3 +1,8 @@
+## [0.0.5]
+
+- Added support to filter which platforms the plugin has support.
+- Renamed build.dart to flutter_plugin_generator.dart to conform with pub.dev warning.
+
 ## [0.0.4]
 
 - Removed Flutter dependency.

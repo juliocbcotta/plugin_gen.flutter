@@ -7,7 +7,7 @@ targets:
 builders:
   flutter_plugin_builder:
     target: ":flutter_plugin_generator"
-    import: "package:flutter_plugin_generator/builder.dart"
+    import: "package:flutter_plugin_generator/flutter_plugin_generator.dart"
     builder_factories: ["flutterPluginBuilder"]
     build_extensions: {".dart": ["flutter_plugin.g.part"]}
     auto_apply: dependents

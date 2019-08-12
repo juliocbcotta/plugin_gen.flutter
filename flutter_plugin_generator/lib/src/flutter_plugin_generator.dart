@@ -54,8 +54,9 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     return template;
   }
 
-  List<SupportedPlatform> findSupportedPlatforms(MethodElement method) {
-    final annotation = method.metadata.firstWhere(
+  List<SupportedPlatform> findSupportedPlatforms(
+      List<ElementAnnotation> metadata) {
+    final annotation = metadata.firstWhere(
         (annotation) =>
             annotation.computeConstantValue().type.displayName ==
             'SupportedPlatforms',
@@ -76,6 +77,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   }
 
   String declareMethods(ClassElement element) {
+    final pluginSupportedPlatforms = findSupportedPlatforms(element.metadata);
     final methods = element.methods.where((method) {
       return method.isAbstract &&
           method.isPublic &&
@@ -83,7 +85,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     });
     final buffer = StringBuffer();
     methods.forEach((method) {
-      final supportedPlatformsOnly = findSupportedPlatforms(method);
+      final methodSupportedPlatforms = findSupportedPlatforms(method.metadata);
 
       final methodName = method.displayName;
 
@@ -93,8 +95,8 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
       buffer.writeln('@override');
       buffer.writeln('$methodReturnType $methodName($methodParams) async {');
 
-      SupportedPlatform.values.forEach((platform) {
-        if (!supportedPlatformsOnly.contains(platform)) {
+      pluginSupportedPlatforms.forEach((platform) {
+        if (!methodSupportedPlatforms.contains(platform)) {
           final name = platformName(platform);
           buffer.writeln('''
         if (Platform.is$name)
