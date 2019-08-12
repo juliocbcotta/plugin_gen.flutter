@@ -7,12 +7,12 @@ pubspec.yaml of your plugin
 
 ``` yaml
 dependencies:
-  flutter_plugin_annotations: ^0.0.3
+  flutter_plugin_annotations: ^0.0.4
     
     
 dev_dependencies:
   build_runner: ^1.0.0
-  flutter_plugin_generator: ^0.0.3
+  flutter_plugin_generator: ^0.0.4
 ```
 
 In your plugins folder
@@ -160,8 +160,8 @@ PRs are welcome!
 
 ## TODO
 - document code
-- annotation for AndroidOnly and IOSOnly methods
 - annotation for EventChannel in methods
 - allow static channel
 - allow singleton
 - tests
+- annotation SupportedPlatforms except

@@ -1,3 +1,9 @@
+## [0.0.4]
+
+- Removed Flutter dependency.
+- Added the ability to list in which platforms a given method will work.
+- Better type matching for Map inner types.
+
 ## [0.0.3]
 
 - Downgrade meta lib version.

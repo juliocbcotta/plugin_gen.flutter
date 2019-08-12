@@ -1,3 +1,8 @@
+## [0.0.4]
+
+- Removed Flutter dependency.
+- Added SupportedPlatforms annotation.
+
 ## [0.0.3]
 
 - Downgrade meta lib version.
