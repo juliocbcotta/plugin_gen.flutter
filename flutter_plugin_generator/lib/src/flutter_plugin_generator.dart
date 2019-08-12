@@ -18,7 +18,7 @@ import 'package:source_gen/source_gen.dart';
 /// Will generate:
 ///
 ///``` dart
-/// part of 'my_platform_plugin.dart';
+/// part of 'platform_plugin.dart';
 ///
 /// **************************************************************************
 /// FlutterPluginGenerator
@@ -54,6 +54,27 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     return template;
   }
 
+  List<SupportedPlatform> findSupportedPlatforms(MethodElement method) {
+    final annotation = method.metadata.firstWhere(
+        (annotation) =>
+            annotation.computeConstantValue().type.displayName ==
+            'SupportedPlatforms',
+        orElse: () => null);
+
+    return annotation == null
+        ? SupportedPlatform.values
+        : annotation.constantValue
+            .getField('only')
+            .toListValue()
+            .map((only) => SupportedPlatform.values.firstWhere(
+                (platform) => only.getField(platformName(platform)) != null))
+            .toList();
+  }
+
+  String platformName(SupportedPlatform platform) {
+    return platform.toString().split('.').last;
+  }
+
   String declareMethods(ClassElement element) {
     final methods = element.methods.where((method) {
       return method.isAbstract &&
@@ -62,6 +83,8 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     });
     final buffer = StringBuffer();
     methods.forEach((method) {
+      final supportedPlatformsOnly = findSupportedPlatforms(method);
+
       final methodName = method.displayName;
 
       final methodParams = declareParams(method.parameters);
@@ -69,6 +92,16 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
 
       buffer.writeln('@override');
       buffer.writeln('$methodReturnType $methodName($methodParams) async {');
+
+      SupportedPlatform.values.forEach((platform) {
+        if (!supportedPlatformsOnly.contains(platform)) {
+          final name = platformName(platform);
+          buffer.writeln('''
+        if (Platform.is$name)
+            throw UnsupportedError('Functionality $methodName is not available on $name.');
+        ''');
+        }
+      });
 
       final innerType =
           (method.returnType as ParameterizedType).typeArguments[0];
@@ -83,6 +116,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
       buffer.writeln('$resultMapped');
       buffer.writeln('}');
     });
+
     return buffer.toString();
   }
 
