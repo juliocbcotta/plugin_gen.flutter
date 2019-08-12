@@ -4,6 +4,46 @@ import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 
+/// This class reads the [MethodCallPlugin] annotation and the classes where it is applied.
+/// It will create a [MethodChannel] using the supplied [MethodCallPlugin.channelName] and
+/// a class with the prefix `_$`that implements the class where the annotation was used.
+/// Example:
+///
+/// ``` dart
+/// @MethodCallPlugin(channelName: "my channel name")
+/// abstract class PlatformPlugin {
+///  Future<String> platform();
+/// }
+/// ```
+/// Will generate:
+///
+///``` dart
+/// part of 'my_platform_plugin.dart';
+///
+/// **************************************************************************
+/// FlutterPluginGenerator
+/// **************************************************************************
+///
+///class _$PlatformPlugin extends PlatformPlugin {
+///  final MethodChannel _methodChannel;
+///
+///  factory _$PlatformPlugin() {
+///    return _$PlatformPlugin.private(const MethodChannel('my channel name'));
+///  }
+///
+///  _$PlatformPlugin.private(this._methodChannel);
+///
+///  @override
+///  Future<String> platform() async {
+///    final result = await _methodChannel.invokeMethod<String>('platform');
+///    return result;
+///  }
+/// }
+///```
+///
+/// /// See also:
+///
+///  * [https://pub.dev/packages/flutter_plugin_annotations], counter part library to this one.
 class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   const FlutterPluginGenerator();
 
@@ -54,13 +94,13 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     });
     parameters.forEach((param) {
       if (firstNamed == param) {
-        buffer.write('{\n');
+        buffer.writeln('{');
       }
       buffer.write(param.type.displayName + ' ' + param.displayName);
       buffer.write(', ');
     });
     if (firstNamed != null) {
-      buffer.write('}\n');
+      buffer.writeln('}');
     }
     return buffer.toString();
   }
