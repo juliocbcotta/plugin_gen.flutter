@@ -12,7 +12,9 @@ import 'package:source_gen/source_gen.dart';
 /// ``` dart
 /// @MethodCallPlugin(channelName: "my channel name")
 /// abstract class PlatformPlugin {
+///
 ///  Future<String> platform();
+///
 /// }
 /// ```
 /// Will generate:
@@ -23,21 +25,19 @@ import 'package:source_gen/source_gen.dart';
 /// **************************************************************************
 /// FlutterPluginGenerator
 /// **************************************************************************
+/// class _$PlatformPlugin extends PlatformPlugin {
+///   static const MethodChannel _methodChannel =
+///       const MethodChannel('my channel channel');
 ///
-///class _$PlatformPlugin extends PlatformPlugin {
-///  final MethodChannel _methodChannel;
+///   _$PlatformPlugin();
 ///
-///  factory _$PlatformPlugin() {
-///    return _$PlatformPlugin.private(const MethodChannel('my channel name'));
-///  }
+///   @override
+///   Future<String> platform() async {
 ///
-///  _$PlatformPlugin.private(this._methodChannel);
+///     final result = await _methodChannel.invokeMethod<String>('platform');
 ///
-///  @override
-///  Future<String> platform() async {
-///    final result = await _methodChannel.invokeMethod<String>('platform');
-///    return result;
-///  }
+///     return result;
+///   }
 /// }
 ///```
 ///
