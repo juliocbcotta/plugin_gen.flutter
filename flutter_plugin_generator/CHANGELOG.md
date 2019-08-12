@@ -4,6 +4,7 @@
 - Renamed build.dart to flutter_plugin_generator.dart to conform with pub.dev warning.
 - **Breaking change** Now the generated plugin will have a static const MethodChannel shared across instances, unless
 at least one path replacement is the in the [MethodCallPlugin.channelName] string.
+
 ## [0.0.4]
 
 - Removed Flutter dependency.

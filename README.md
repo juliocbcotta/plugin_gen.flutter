@@ -7,12 +7,12 @@ pubspec.yaml of your plugin
 
 ``` yaml
 dependencies:
-  flutter_plugin_annotations: ^0.0.4
+  flutter_plugin_annotations: ^0.0.5
     
     
 dev_dependencies:
   build_runner: ^1.0.0
-  flutter_plugin_generator: ^0.0.4
+  flutter_plugin_generator: ^0.0.5
 ```
 
 In your plugins folder
@@ -43,20 +43,20 @@ abstract class PlatformPlugin {
 ###################### platform_plugin.g.dart ################################
 
 class _$PlatformPlugin extends PlatformPlugin {
-  final MethodChannel _methodChannel;
+  static const MethodChannel _methodChannel =
+      const MethodChannel('my channel channel');
 
-  factory _$PlatformPlugin() {
-    return _$PlatformPlugin.private(const MethodChannel('my channel name'));
-  }
-  _$PlatformPlugin.private(this._methodChannel);
+  _$PlatformPlugin();
 
   @override
   Future<String> platform() async {
+    
     final result = await _methodChannel.invokeMethod<String>('platform');
-
+    
     return result;
   }
 }
+
 ```
 
 The sample above may look silly, but it can save a lot of code when dealing with parameters and return types.
@@ -161,7 +161,5 @@ PRs are welcome!
 ## TODO
 - document code
 - annotation for EventChannel in methods
-- allow static channel
-- allow singleton
 - tests
 - annotation SupportedPlatforms except
