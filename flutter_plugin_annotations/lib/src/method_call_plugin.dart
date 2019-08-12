@@ -12,12 +12,49 @@ import 'package:meta/meta.dart';
 ///  Future<String> platform();
 /// }
 /// ```
-/// /// See also:
+/// See also:
 ///
 ///  * [https://pub.dev/packages/flutter_plugin_generator], counter part library to this one.
+
+/// If the channelName has path replacements, i.e. '{id}', a factory with that path replacements will be generated.
+
+/// ``` dart
+/// @MethodCallPlugin(channelName: "my_channel_name/{id}")
+/// abstract class PlatformPlugin {
+///
+///  Future<String> platform();
+///
+/// }
+/// ```
+///
+/// Generates:
+///
+///```dart
+/// class _$PlatformPlugin extends PlatformPlugin {
+///
+///   final MethodChannel _methodChannel;
+///
+///   factory _$PlatformPlugin({@required String id}) {
+///
+///     final channelName = 'platform_channel_with_id/{id}'.replaceAll('{id}', id);
+///
+///     return _$PlatformPlugin.private(MethodChannel(channelName));
+///   }
+///   _$PlatformPlugin.private(this._methodChannel);
+///
+///   @override
+///   Future<String> platform() async {
+///     final result = await _methodChannel.invokeMethod<String>('platform');
+///     return result;
+///   }
+/// }
+///```
+
 class MethodCallPlugin {
   /// [MethodChannel] name.
   final String channelName;
 
-  const MethodCallPlugin({@required this.channelName});
+  const MethodCallPlugin({
+    @required this.channelName,
+  });
 }
