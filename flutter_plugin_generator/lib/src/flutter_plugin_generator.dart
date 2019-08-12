@@ -10,29 +10,12 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   @override
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
-    final channelName = annotation.read('channelName').stringValue;
-    final className = element.displayName;
-
-    final template = '''
-    
-    class _\$$className extends $className {
-    
-    final MethodChannel _methodChannel;
-    
-    factory _\$$className() {
-    return _\$$className.private(const MethodChannel('$channelName'));
-  }
-    _\$$className.private(this._methodChannel);
-    
-    ${declareMethods(element)}
-    
-    }  
-    ''';
+    final template = generatePluginTemplate(element, annotation);
     return template;
   }
 
-  String declareMethods(Element element) {
-    final methods = (element as ClassElement).methods.where((method) {
+  String declareMethods(ClassElement element) {
+    final methods = element.methods.where((method) {
       return method.isAbstract &&
           method.isPublic &&
           method.returnType.isDartAsyncFuture;
@@ -40,25 +23,23 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     final buffer = StringBuffer();
     methods.forEach((method) {
       final methodName = method.displayName;
-      final returnType = method.returnType.displayName;
+
+      final methodParams = declareParams(method.parameters);
+      final methodReturnType = method.returnType.displayName;
+
+      buffer.writeln('@override');
+      buffer.writeln('$methodReturnType $methodName($methodParams) async {');
+
       final innerType =
           (method.returnType as ParameterizedType).typeArguments[0];
-
       final invokeMethod = selectInvokeMethod(innerType);
-      final param = selectParamToInvokeMethod(method.parameters);
+      final invokeParams = selectParamToInvokeMethod(method.parameters);
+      final separator = invokeParams.isEmpty ? '' : ',';
 
-      buffer.writeln('@override ');
-      buffer.writeln(returnType +
-          ' ' +
-          methodName +
-          '(' +
-          declareParams(method.parameters) +
-          ') async {');
-
-      buffer.writeln('''
-      final result = await _methodChannel.$invokeMethod('$methodName'$param);
-      ''');
       final resultMapped = mapResultToDart(innerType);
+
+      buffer.writeln(
+          'final result = await _methodChannel.$invokeMethod(\'$methodName\'$separator $invokeParams);');
       buffer.writeln('$resultMapped');
       buffer.writeln('}');
     });
@@ -87,27 +68,33 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   String selectInvokeMethod(DartType type) {
     if (isCoreDartType(type)) {
       return 'invokeMethod<${type.displayName}>';
-    }
-
-    if (isList(type)) {
+    } else if (isDartList(type)) {
       final innerType = (type as ParameterizedType).typeArguments[0];
-      if (isCoreDartType(innerType)) {
-        return 'invokeListMethod<${innerType.displayName}>';
-      } else {
-        return 'invokeListMethod<dynamic>';
-      }
-    } else if (isMap(type)) {
-      return 'invokeMapMethod<dynamic, dynamic>';
+      final inner =
+          isCoreDartType(innerType) ? '${innerType.displayName}' : 'dynamic';
+
+      return 'invokeListMethod<$inner>';
+    } else if (isDartMap(type)) {
+      final keyType = (type as ParameterizedType).typeArguments[0];
+      final valueType = (type as ParameterizedType).typeArguments[1];
+
+      final key =
+          isCoreDartType(keyType) ? '${keyType.displayName}' : 'dynamic';
+
+      final value =
+          isCoreDartType(valueType) ? '${valueType.displayName}' : 'dynamic';
+
+      return 'invokeMapMethod<$key, $value>';
     }
 
     return 'invokeMapMethod<String, dynamic>';
   }
 
-  bool isList(DartType type) {
+  bool isDartList(DartType type) {
     return type.displayName.startsWith("List<");
   }
 
-  bool isMap(DartType type) {
+  bool isDartMap(DartType type) {
     return type.displayName.startsWith("Map<");
   }
 
@@ -123,50 +110,45 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   String mapResultToDart(DartType type) {
     if (isCoreDartType(type)) {
       return 'return result;';
-    } else if (isList(type)) {
+    } else if (isDartList(type)) {
       final innerType = (type as ParameterizedType).typeArguments[0];
-      
+
       if (isCoreDartType(innerType)) {
         return 'return result;';
       } else {
-        return 'return result.map((item) => ${innerType.displayName}.fromJson(Map<String, dynamic>.from(item))).toList();';
+        return 'return result' +
+            '.map((item) => Map<String, dynamic>.from(item))' +
+            '.map((item) => ${innerType.displayName}.fromJson(item)).toList();';
       }
     }
-    if (isMap(type)) {
+    if (isDartMap(type)) {
       final keyType = (type as ParameterizedType).typeArguments[0];
       final valueType = (type as ParameterizedType).typeArguments[1];
-      
+
       if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
         return 'return Map<${keyType.displayName}, ${valueType.displayName}>.from(result);';
-      } else if (isCoreDartType(keyType) && !isCoreDartType(valueType)) {
-        return ''' return result
-                            .map((key, value) => MapEntry(
-                             key,
-                              Map<String, dynamic>.from(value)
-                            ))
-                            .map((key, value) => MapEntry(
-                              key, 
-                              ${valueType.displayName}.fromJson(value)
-                            ));''';
-      } else if (!isCoreDartType(keyType) && isCoreDartType(valueType)) {
-        return ''' return result
-                            .map((key, value) => MapEntry(
-                              Map<String, dynamic>.from(key),
-                              value,
-                            ))
-                            .map((key, value) => MapEntry(
-                              ${keyType.displayName}.fromJson(key),
-                              value,
-                            ));''';
       } else {
+        final key =
+            isCoreDartType(keyType) ? 'key' : 'Map<String, dynamic>.from(key)';
+        final value = isCoreDartType(valueType)
+            ? 'value'
+            : 'Map<String, dynamic>.from(value)';
+
+        final key2 = isCoreDartType(keyType)
+            ? 'key'
+            : '${keyType.displayName}.fromJson(key)';
+        final value2 = isCoreDartType(valueType)
+            ? 'value'
+            : '${valueType.displayName}.fromJson(value)';
+
         return ''' return result
                             .map((key, value) => MapEntry(
-                              Map<String, dynamic>.from(key),
-                              Map<String, dynamic>.from(value),
+                              $key,
+                              $value,
                             ))
                             .map((key, value) => MapEntry(
-                              ${keyType.displayName}.fromJson(key), 
-                              ${valueType.displayName}.fromJson(value),
+                              $key2, 
+                              $value2,
                             ));''';
       }
     } else {
@@ -182,65 +164,82 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
       final type = param.type;
 
       if (isCoreDartType(type)) {
-        return ', ' + param.displayName;
-      } else if (isList(type)) {
+        return param.displayName;
+      } else if (isDartList(type)) {
         final innerType = (type as ParameterizedType).typeArguments[0];
+        final mapping = isCoreDartType(innerType)
+            ? ''
+            : '.map((item) => item.toJson()).toList()';
 
-        if (isCoreDartType(innerType)) {
-          return ', ' + param.displayName;
-        } else {
-          return ', ${param.displayName}.map((item) => item.toJson()).toList()';
-        }
-      } else if (isMap(type)) {
+        return '${param.displayName}$mapping';
+      } else if (isDartMap(type)) {
         final keyType = (type as ParameterizedType).typeArguments[0];
         final valueType = (type as ParameterizedType).typeArguments[1];
 
         if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
-          return ', ' + param.displayName;
-        } else if (isCoreDartType(keyType) && !isCoreDartType(valueType)) {
-          return ', ${param.displayName}.map((key, value) => MapEntry(key, value.toJson()))';
-        } else if (!isCoreDartType(keyType) && isCoreDartType(valueType)) {
-          return ', ${param.displayName}.map((key, value) => MapEntry(key.toJson(), value))';
+          return param.displayName;
         } else {
-          return ', ${param.displayName}.map((key, value) => MapEntry(key.toJson(), value.toJson()))';
+          final key = isCoreDartType(keyType) ? 'key' : 'key.toJson()';
+          final value = isCoreDartType(valueType) ? 'value' : 'value.toJson()';
+          return '${param.displayName}.map((key, value) => MapEntry($key, $value))';
         }
       } else {
-        return ', ${param.displayName}.toJson()';
+        return '${param.displayName}.toJson()';
       }
     } else {
       final map = params.map((param) {
         final type = param.type;
 
         if (isCoreDartType(type)) {
-          return ''' '${param.displayName}': ${param.displayName}''';
-        } else if (isList(type)) {
+          return '\'${param.displayName}\': ${param.displayName}';
+        } else if (isDartList(type)) {
           final innerType = (type as ParameterizedType).typeArguments[0];
 
-          if (isCoreDartType(innerType)) {
-            return '\'${param.displayName}\' : ' + param.displayName;
-          } else {
-            return '\'${param.displayName}\' :  ${param.displayName}.map((item) => item.toJson()).toList()';
-          }
-          
-        } else if (isMap(type)) {
+          final mapping = isCoreDartType(innerType)
+              ? ''
+              : '.map((item) => item.toJson()).toList()';
+
+          return '\'${param.displayName}\' :  ${param.displayName}$mapping';
+        } else if (isDartMap(type)) {
           final keyType = (type as ParameterizedType).typeArguments[0];
           final valueType = (type as ParameterizedType).typeArguments[1];
 
           if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
             return '\'${param.displayName}\' : ' + param.displayName;
-          } else if (isCoreDartType(keyType) && !isCoreDartType(valueType)) {
-            return '\'${param.displayName}\' : ${param.displayName}.map((key, value) => MapEntry(key, value.toJson()))';
-          } else if (!isCoreDartType(keyType) && isCoreDartType(valueType)) {
-            return '\'${param.displayName}\' : ${param.displayName}.map((key, value) => MapEntry(key.toJson(), value))';
           } else {
-            return '\'${param.displayName}\' : ${param.displayName}.map((key, value) => MapEntry(key.toJson(), value.toJson()))';
+            final key = isCoreDartType(keyType) ? 'key' : 'key.toJson()';
+            final value =
+                isCoreDartType(valueType) ? 'value' : 'value.toJson()';
+            return '\'${param.displayName}\' : ${param.displayName}.map((key, value) => MapEntry($key, $value))';
           }
         } else {
           return '\'${param.displayName}\' : ${param.displayName}.toJson()';
         }
       }).join(', ');
 
-      return ''', <String, dynamic>{$map}''';
+      return '<String, dynamic>{$map}';
     }
+  }
+
+  String generatePluginTemplate(Element element, ConstantReader annotation) {
+    final channelName = annotation.read('channelName').stringValue;
+    final className = element.displayName;
+
+    return '''
+    
+    class _\$$className extends $className {
+    
+      final MethodChannel _methodChannel;
+    
+      factory _\$$className() {
+        return _\$$className.private(const MethodChannel('$channelName'));
+      }
+      
+      _\$$className.private(this._methodChannel);
+    
+      ${declareMethods(element)}
+    
+    }  
+    ''';
   }
 }
