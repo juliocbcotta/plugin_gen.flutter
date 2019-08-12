@@ -300,18 +300,47 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   String generatePluginTemplate(Element element, ConstantReader annotation) {
     final channelName = annotation.read('channelName').stringValue;
     final className = element.displayName;
+    final pathRegexp = RegExp('(\{.*?\})');
+    final groups =
+        pathRegexp.allMatches(channelName).map((match) => match.group(0));
+
+    final constructorParameters = groups
+        .map((group) => group.replaceAll('{', '').replaceAll('}', ''))
+        .map((variable) => '@required String $variable')
+        .join(', ');
+
+    final replacements = groups.map((group) {
+      final variable = group.replaceAll('{', '').replaceAll('}', '');
+      return 'replaceAll(\'$group\', $variable)';
+    }).join('.');
+
+    final oneChannelByInstance = constructorParameters.isNotEmpty;
+    final factory = oneChannelByInstance
+        ? '''
+      
+       final MethodChannel _methodChannel;
+       
+      factory _\$$className({$constructorParameters}) {
+       
+          final channelName = \'$channelName\'.$replacements;
+          
+          return _\$$className.private(MethodChannel(channelName));
+      }
+      _\$$className.private(this._methodChannel);
+    '''
+        : '''
+        
+        static const MethodChannel _methodChannel = const MethodChannel('$channelName');
+        
+        _\$$className();
+      ''';
 
     return '''
     
     class _\$$className extends $className {
     
-      final MethodChannel _methodChannel;
     
-      factory _\$$className() {
-        return _\$$className.private(const MethodChannel('$channelName'));
-      }
-      
-      _\$$className.private(this._methodChannel);
+      $factory
     
       ${declareMethods(element)}
     
