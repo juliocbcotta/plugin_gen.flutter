@@ -1,3 +1,7 @@
+## [0.0.3]
+
+- Downgrade meta lib version.
+
 ## [0.0.2]
 
 - Made channelName required.
