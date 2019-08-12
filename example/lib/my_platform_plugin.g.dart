@@ -12,40 +12,36 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   factory _$MyPlatformPlugin() {
     return _$MyPlatformPlugin.private(const MethodChannel('my channel name'));
   }
+
   _$MyPlatformPlugin.private(this._methodChannel);
 
   @override
   Future<String> receiveString() async {
     final result = await _methodChannel.invokeMethod<String>('receiveString');
-
     return result;
   }
 
   @override
   Future<void> receiveVoid() async {
     final result = await _methodChannel.invokeMethod<void>('receiveVoid');
-
     return result;
   }
 
   @override
   Future<Null> receiveNull() async {
     final result = await _methodChannel.invokeMethod<Null>('receiveNull');
-
     return result;
   }
 
   @override
   Future<int> receiveInt() async {
     final result = await _methodChannel.invokeMethod<int>('receiveInt');
-
     return result;
   }
 
   @override
   Future<double> receiveDouble() async {
     final result = await _methodChannel.invokeMethod<double>('receiveDouble');
-
     return result;
   }
 
@@ -53,7 +49,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<MyData> receiveMyData() async {
     final result =
         await _methodChannel.invokeMapMethod<String, dynamic>('receiveMyData');
-
     return MyData.fromJson(result);
   }
 
@@ -61,7 +56,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<List<String>> receiveSimpleStringList() async {
     final result = await _methodChannel
         .invokeListMethod<String>('receiveSimpleStringList');
-
     return result;
   }
 
@@ -69,7 +63,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<List<int>> receiveSimpleIntList() async {
     final result =
         await _methodChannel.invokeListMethod<int>('receiveSimpleIntList');
-
     return result;
   }
 
@@ -77,9 +70,9 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<List<MyData>> receiveMyDataList() async {
     final result =
         await _methodChannel.invokeListMethod<dynamic>('receiveMyDataList');
-
     return result
-        .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) => Map<String, dynamic>.from(item))
+        .map((item) => MyData.fromJson(item))
         .toList();
   }
 
@@ -88,7 +81,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
     String str,
   ) async {
     final result = await _methodChannel.invokeMethod<String>('sendString', str);
-
     return result;
   }
 
@@ -101,7 +93,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
     final result = await _methodChannel.invokeMethod<String>(
         'sendMultipleDartTypes',
         <String, dynamic>{'str': str, 'number': number, 'floating': floating});
-
     return result;
   }
 
@@ -111,7 +102,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   ) async {
     final result = await _methodChannel.invokeMapMethod<String, dynamic>(
         'sendMyData', data.toJson());
-
     return MyData.fromJson(result);
   }
 
@@ -121,7 +111,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   ) async {
     final result =
         await _methodChannel.invokeListMethod<String>('sendStringList', list);
-
     return result;
   }
 
@@ -131,9 +120,9 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   ) async {
     final result = await _methodChannel.invokeListMethod<dynamic>(
         'sendMyDataList', list.map((item) => item.toJson()).toList());
-
     return result
-        .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) => Map<String, dynamic>.from(item))
+        .map((item) => MyData.fromJson(item))
         .toList();
   }
 
@@ -153,33 +142,35 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
       'number': number,
       'floating': floating
     });
-
     return result;
   }
 
   @override
   Future<Map<double, String>> receiveSimpleMap() async {
     final result = await _methodChannel
-        .invokeMapMethod<dynamic, dynamic>('receiveSimpleMap');
-
+        .invokeMapMethod<double, String>('receiveSimpleMap');
     return Map<double, String>.from(result);
   }
 
   @override
   Future<Map<String, MyOtherData>> receiveSimpleKeyComplexValueMap() async {
     final result = await _methodChannel
-        .invokeMapMethod<dynamic, dynamic>('receiveSimpleKeyComplexValueMap');
-
+        .invokeMapMethod<String, dynamic>('receiveSimpleKeyComplexValueMap');
     return result
-        .map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)))
-        .map((key, value) => MapEntry(key, MyOtherData.fromJson(value)));
+        .map((key, value) => MapEntry(
+              key,
+              Map<String, dynamic>.from(value),
+            ))
+        .map((key, value) => MapEntry(
+              key,
+              MyOtherData.fromJson(value),
+            ));
   }
 
   @override
   Future<Map<MyData, String>> receiveComplexKeySimpleValueMap() async {
     final result = await _methodChannel
-        .invokeMapMethod<dynamic, dynamic>('receiveComplexKeySimpleValueMap');
-
+        .invokeMapMethod<dynamic, String>('receiveComplexKeySimpleValueMap');
     return result
         .map((key, value) => MapEntry(
               Map<String, dynamic>.from(key),
@@ -195,7 +186,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<Map<MyData, MyOtherData>> receiveComplexMap() async {
     final result = await _methodChannel
         .invokeMapMethod<dynamic, dynamic>('receiveComplexMap');
-
     return result
         .map((key, value) => MapEntry(
               Map<String, dynamic>.from(key),
@@ -211,9 +201,8 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<Map<String, String>> sendSimpleMap(
     Map<String, String> map,
   ) async {
-    final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
+    final result = await _methodChannel.invokeMapMethod<String, String>(
         'sendSimpleMap', map);
-
     return Map<String, String>.from(result);
   }
 
@@ -221,23 +210,27 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   Future<Map<String, MyOtherData>> sendSimpleKeyComplexValueMap(
     Map<String, MyOtherData> map,
   ) async {
-    final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
+    final result = await _methodChannel.invokeMapMethod<String, dynamic>(
         'sendSimpleKeyComplexValueMap',
         map.map((key, value) => MapEntry(key, value.toJson())));
-
     return result
-        .map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)))
-        .map((key, value) => MapEntry(key, MyOtherData.fromJson(value)));
+        .map((key, value) => MapEntry(
+              key,
+              Map<String, dynamic>.from(value),
+            ))
+        .map((key, value) => MapEntry(
+              key,
+              MyOtherData.fromJson(value),
+            ));
   }
 
   @override
   Future<Map<MyData, String>> sendComplexKeySimpleValueMap(
     Map<MyData, String> map,
   ) async {
-    final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
+    final result = await _methodChannel.invokeMapMethod<dynamic, String>(
         'sendComplexKeySimpleValueMap',
         map.map((key, value) => MapEntry(key.toJson(), value)));
-
     return result
         .map((key, value) => MapEntry(
               Map<String, dynamic>.from(key),
@@ -256,7 +249,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
     final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
         'sendComplexMap',
         map.map((key, value) => MapEntry(key.toJson(), value.toJson())));
-
     return result
         .map((key, value) => MapEntry(
               Map<String, dynamic>.from(key),
@@ -282,7 +274,6 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
       'map3': map3.map((key, value) => MapEntry(key.toJson(), value)),
       'map4': map4.map((key, value) => MapEntry(key.toJson(), value.toJson()))
     });
-
     return result;
   }
 }
