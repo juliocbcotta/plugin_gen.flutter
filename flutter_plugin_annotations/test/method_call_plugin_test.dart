@@ -1,5 +1,6 @@
 import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
+
 
 void main() {
   group('Testing the creation of the MethodCallPlugin class', () {
