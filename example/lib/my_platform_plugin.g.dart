@@ -16,6 +16,33 @@ class _$MyPlatformPlugin extends MyPlatformPlugin {
   _$MyPlatformPlugin.private(this._methodChannel);
 
   @override
+  Future<String> failToReceiveStringOnAnythingOtherThanIOS() async {
+    if (Platform.isAndroid)
+      throw UnsupportedError(
+          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Android.');
+
+    if (Platform.isWindows)
+      throw UnsupportedError(
+          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Windows.');
+
+    if (Platform.isFuchsia)
+      throw UnsupportedError(
+          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Fuchsia.');
+
+    if (Platform.isLinux)
+      throw UnsupportedError(
+          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Linux.');
+
+    if (Platform.isMacOS)
+      throw UnsupportedError(
+          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on MacOS.');
+
+    final result = await _methodChannel
+        .invokeMethod<String>('failToReceiveStringOnAnythingOtherThanIOS');
+    return result;
+  }
+
+  @override
   Future<String> receiveString() async {
     final result = await _methodChannel.invokeMethod<String>('receiveString');
     return result;

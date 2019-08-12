@@ -44,17 +44,38 @@ class _PluginControllerWdigetState extends State<PluginControllerWdiget> {
             ),
           ),
           Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveString();
+                    setState(() {
+                      text = d.toString();
+                    });
+                  },
+                  child: Text('receive string'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    try {
+                      final d = await plugin.failToReceiveStringOnAnythingOtherThanIOS();
+                      setState(() {
+                        text = d.toString();
+                      });
+                    } catch (e) {
+                      setState(() {
+                        text = 'ATTENTION: \n\n' +
+                            e.toString() +
+                            '\n\n This was defined in the plugin declarion, this is not a bug!';
+                      });
+                    }
+                  },
+                  child: Text('should work only in IOS'),
+                ),
+              ]),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              RaisedButton(
-                onPressed: () async {
-                  final d = await plugin.receiveString();
-                  setState(() {
-                    text = d.toString();
-                  });
-                },
-                child: Text('receive string'),
-              ),
               RaisedButton(
                 onPressed: () async {
                   await plugin.receiveVoid();
