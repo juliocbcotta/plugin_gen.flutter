@@ -37,83 +37,101 @@ class _PluginControllerWdigetState extends State<PluginControllerWdiget> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Center(
-            child: Text(text),
+          SizedBox(
+            height: 200,
+            child: Center(
+              child: Text(text),
+            ),
           ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveString();
-              setState(() {
-                text = d.toString();
-              });
-            },
-            child: Text('receive string'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () async {
+                  final d = await plugin.receiveString();
+                  setState(() {
+                    text = d.toString();
+                  });
+                },
+                child: Text('receive string'),
+              ),
+              RaisedButton(
+                onPressed: () async {
+                  await plugin.receiveVoid();
+                  setState(() {
+                    text = 'void';
+                  });
+                },
+                child: Text('receive void'),
+              ),
+              RaisedButton(
+                onPressed: () async {
+                  final d = await plugin.receiveNull();
+                  setState(() {
+                    text = '$d';
+                  });
+                },
+                child: Text('receive null'),
+              ),
+            ],
           ),
-          RaisedButton(
-            onPressed: () async {
-              await plugin.receiveVoid();
-              setState(() {
-                text = 'void';
-              });
-            },
-            child: Text('receive void'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveNull();
-              setState(() {
-                text = '$d';
-              });
-            },
-            child: Text('receive null'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveInt();
-              setState(() {
-                text = d.toString();
-              });
-            },
-            child: Text('receive int'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveDouble();
-              setState(() {
-                text = d.toString();
-              });
-            },
-            child: Text('receive double'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveSimpleStringList();
-              setState(() {
-                text = d.join(',');
-              });
-            },
-            child: Text('receive string list'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveSimpleIntList();
-              setState(() {
-                text = d.join(',');
-              });
-            },
-            child: Text('receive int list'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveSimpleMap();
-              setState(() {
-                text = d.entries.map((entry) {
-                  return entry.key.toString() + ': ' + entry.value.toString();
-                }).toString();
-              });
-            },
-            child: Text('receive simple map'),
-          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveInt();
+                    setState(() {
+                      text = d.toString();
+                    });
+                  },
+                  child: Text('receive int'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveDouble();
+                    setState(() {
+                      text = d.toString();
+                    });
+                  },
+                  child: Text('receive double'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveSimpleStringList();
+                    setState(() {
+                      text = d.join(',');
+                    });
+                  },
+                  child: Text('receive string list'),
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveSimpleIntList();
+                    setState(() {
+                      text = d.join(',');
+                    });
+                  },
+                  child: Text('receive int list'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveSimpleMap();
+                    setState(() {
+                      text = d.entries.map((entry) {
+                        return entry.key.toString() +
+                            ': ' +
+                            entry.value.toString();
+                      }).toString();
+                    });
+                  },
+                  child: Text('receive simple map'),
+                ),
+              ]),
           RaisedButton(
             onPressed: () async {
               final d = await plugin.receiveSimpleKeyComplexValueMap();
@@ -136,104 +154,125 @@ class _PluginControllerWdigetState extends State<PluginControllerWdiget> {
             },
             child: Text('receive complex key, simple value map'),
           ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveComplexMap();
-              setState(() {
-                text = d.entries.map((entry) {
-                  return entry.key.toString() + ': ' + entry.value.toString();
-                }).toString();
-              });
-            },
-            child: Text('receive complex map'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveMyData();
-              setState(() {
-                text = d.toString();
-              });
-            },
-            child: Text('receive MyData'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.receiveMyDataList();
-              setState(() {
-                text = d.join(',\n');
-              });
-            },
-            child: Text('receive MyData list'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.sendString('hello world');
-              setState(() {
-                text = d;
-              });
-            },
-            child: Text('send String'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d =
-                  await plugin.sendMultipleDartTypes('hello world', 42, 1.0);
-              setState(() {
-                text = d;
-              });
-            },
-            child: Text('send multiple dart types'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.sendMultipleMixedTypes(
-                  data: MyData(data: "some text", value: MyEnum.VALUE_1),
-                  datas: [
-                    MyData(data: "some text", value: MyEnum.VALUE_1),
-                    MyData(data: "some text", value: MyEnum.VALUE_1),
-                  ],
-                  floating: 1.0,
-                  number: [1, 2, 3, 4],
-                  str: 'many different types of data, complex and simple data');
-              setState(() {
-                text = d;
-              });
-            },
-            child: Text('send multiple mixed types'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.sendMyData(
-                  MyData(data: 'my data string', value: MyEnum.VALUE_1));
-              setState(() {
-                text = d.toString();
-              });
-            },
-            child: Text('send MyData'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.sendMyDataList([
-                MyData(data: 'my data string1', value: MyEnum.VALUE_1),
-                MyData(data: 'my data string2', value: MyEnum.VALUE_2),
-              ]);
-              setState(() {
-                text = d.join(',\n');
-              });
-            },
-            child: Text('send MyData list'),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              final d = await plugin.sendSimpleMap({"key1": "value1"});
-              setState(() {
-                text = d.entries.map((entry) {
-                  return entry.key.toString() + ': ' + entry.value.toString();
-                }).toString();
-              });
-            },
-            child: Text('send simple map'),
-          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveComplexMap();
+                    setState(() {
+                      text = d.entries.map((entry) {
+                        return entry.key.toString() +
+                            ': ' +
+                            entry.value.toString();
+                      }).toString();
+                    });
+                  },
+                  child: Text('receive complex map'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveMyData();
+                    setState(() {
+                      text = d.toString();
+                    });
+                  },
+                  child: Text('receive MyData'),
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.receiveMyDataList();
+                    setState(() {
+                      text = d.join(',\n');
+                    });
+                  },
+                  child: Text('receive MyData list'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.sendString('hello world');
+                    setState(() {
+                      text = d;
+                    });
+                  },
+                  child: Text('send String'),
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.sendMultipleDartTypes(
+                        'hello world', 42, 1.0);
+                    setState(() {
+                      text = d;
+                    });
+                  },
+                  child: Text('send multiple dart types'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.sendMultipleMixedTypes(
+                        data: MyData(data: "some text", value: MyEnum.VALUE_1),
+                        datas: [
+                          MyData(data: "some text", value: MyEnum.VALUE_1),
+                          MyData(data: "some text", value: MyEnum.VALUE_1),
+                        ],
+                        floating: 1.0,
+                        number: [1, 2, 3, 4],
+                        str:
+                            'many different types of data, complex and simple data');
+                    setState(() {
+                      text = d;
+                    });
+                  },
+                  child: Text('send multiple mixed types'),
+                ),
+              ]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.sendMyData(
+                        MyData(data: 'my data string', value: MyEnum.VALUE_1));
+                    setState(() {
+                      text = d.toString();
+                    });
+                  },
+                  child: Text('send MyData'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.sendMyDataList([
+                      MyData(data: 'my data string1', value: MyEnum.VALUE_1),
+                      MyData(data: 'my data string2', value: MyEnum.VALUE_2),
+                    ]);
+                    setState(() {
+                      text = d.join(',\n');
+                    });
+                  },
+                  child: Text('send MyData list'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    final d = await plugin.sendSimpleMap({"key1": "value1"});
+                    setState(() {
+                      text = d.entries.map((entry) {
+                        return entry.key.toString() +
+                            ': ' +
+                            entry.value.toString();
+                      }).toString();
+                    });
+                  },
+                  child: Text('send simple map'),
+                ),
+              ]),
           RaisedButton(
             onPressed: () async {
               final d = await plugin.sendSimpleKeyComplexValueMap(
@@ -289,8 +328,11 @@ class _PluginControllerWdigetState extends State<PluginControllerWdiget> {
             },
             child: Text('send multiple maps'),
           ),
-          Center(
-            child: Text(text),
+          SizedBox(
+            height: 200,
+            child: Center(
+              child: Text(text),
+            ),
           ),
         ],
       ),
