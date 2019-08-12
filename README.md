@@ -29,30 +29,30 @@ In the snipshot below we have a simple plugin declararion and the generated code
 
 
 ``` dart
-part 'my_platform_plugin.g.dart';
+part 'platform_plugin.g.dart';
 
 @MethodCallPlugin(channelName: "my channel name")
-abstract class MyPlatformPlugin {
-  Future<String> receiveString();
+abstract class PlatformPlugin {
+  Future<String> platform();
   
-  static MyPlatformPlugin create() {
-    return _$MyPlatformPlugin();
+  static PlatformPlugin create() {
+    return _$PlatformPlugin();
   }
 }
 
-###################### my_platform_plugin.g.dart ################################
+###################### platform_plugin.g.dart ################################
 
-class _$MyPlatformPlugin extends MyPlatformPlugin {
+class _$PlatformPlugin extends PlatformPlugin {
   final MethodChannel _methodChannel;
 
-  factory _$MyPlatformPlugin() {
-    return _$MyPlatformPlugin.private(const MethodChannel('my channel name'));
+  factory _$PlatformPlugin() {
+    return _$PlatformPlugin.private(const MethodChannel('my channel name'));
   }
-  _$MyPlatformPlugin.private(this._methodChannel);
+  _$PlatformPlugin.private(this._methodChannel);
 
   @override
-  Future<String> receiveString() async {
-    final result = await _methodChannel.invokeMethod<String>('receiveString');
+  Future<String> platform() async {
+    final result = await _methodChannel.invokeMethod<String>('platform');
 
     return result;
   }
@@ -79,8 +79,8 @@ It can use an abstract class and its methods to generate a concrete implementati
 #### NOTE: Use an static method in the abstract plugin class to encapsulate the instantiation.
 
 ``` dart
-  static MyPlatformPlugin create() {
-    return _$MyPlatformPlugin();
+  static PlatformPlugin create() {
+    return _$PlatformPlugin();
   }
 ```
 
