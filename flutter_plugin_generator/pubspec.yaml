@@ -5,22 +5,17 @@ author: Júlio Cesar Bueno Cotta <juliocbcotta@gmail.com>
 homepage: https://github.com/BugsBunnyBR/plugin_gen.flutter
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-
+  meta: ^1.1.6
   build: ^1.0.2
   source_gen: ^0.9.3
   analyzer: '>=0.35.0 <0.38.0'
-  flutter_plugin_annotations: ^0.0.3
+  flutter_plugin_annotations:
+    path: ../flutter_plugin_annotations
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
+  test: ^1.6.5
   build_test: ^0.10.4
   build_runner: ^1.1.2
-
-flutter:
