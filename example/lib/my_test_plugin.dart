@@ -3,14 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 
-part 'my_platform_plugin.g.dart';
+part 'my_test_plugin.g.dart';
 
 @SupportedPlatforms(only: [
   SupportedPlatform.IOS,
   SupportedPlatform.Android,
 ])
-@MethodCallPlugin(channelName: "my channel name")
-abstract class MyPlatformPlugin {
+@MethodCallPlugin(
+  channelName: "my channel name"
+)
+abstract class MyTestPlugin {
   @SupportedPlatforms(only: [
     SupportedPlatform.IOS,
   ])
@@ -77,8 +79,8 @@ abstract class MyPlatformPlugin {
     Map<MyData, MyOtherData> map4,
   });
 
-  static MyPlatformPlugin create() {
-    return _$MyPlatformPlugin();
+  static MyTestPlugin create() {
+    return _$MyTestPlugin();
   }
 }
 

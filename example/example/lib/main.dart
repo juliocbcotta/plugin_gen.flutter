@@ -1,4 +1,4 @@
-import 'package:flutter_gen_sample_plugin/my_platform_plugin.dart';
+import 'package:flutter_gen_sample_plugin/my_test_plugin.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ExampleApp());
@@ -11,19 +11,19 @@ class ExampleApp extends StatelessWidget {
       appBar: AppBar(
         title: Text('test app'),
       ),
-      body: PluginControllerWdiget(),
+      body: PluginControllerWidget(),
     ));
   }
 }
 
-class PluginControllerWdiget extends StatefulWidget {
-  final MyPlatformPlugin plugin = MyPlatformPlugin.create();
+class PluginControllerWidget extends StatefulWidget {
+  final MyTestPlugin plugin = MyTestPlugin.create();
 
   @override
-  _PluginControllerWdigetState createState() => _PluginControllerWdigetState();
+  _PluginControllerWidgetState createState() => _PluginControllerWidgetState();
 }
 
-class _PluginControllerWdigetState extends State<PluginControllerWdiget> {
+class _PluginControllerWidgetState extends State<PluginControllerWidget> {
   String text = '';
 
   @override
@@ -58,7 +58,8 @@ class _PluginControllerWdigetState extends State<PluginControllerWdiget> {
                 RaisedButton(
                   onPressed: () async {
                     try {
-                      final d = await plugin.failToReceiveStringOnAnythingOtherThanIOS();
+                      final d = await plugin
+                          .failToReceiveStringOnAnythingOtherThanIOS();
                       setState(() {
                         text = d.toString();
                       });

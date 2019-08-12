@@ -1,19 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'my_platform_plugin.dart';
+part of 'my_test_plugin.dart';
 
 // **************************************************************************
 // FlutterPluginGenerator
 // **************************************************************************
 
-class _$MyPlatformPlugin extends MyPlatformPlugin {
-  final MethodChannel _methodChannel;
+class _$MyTestPlugin extends MyTestPlugin {
+  static const MethodChannel _methodChannel =
+      const MethodChannel('my channel name');
 
-  factory _$MyPlatformPlugin() {
-    return _$MyPlatformPlugin.private(const MethodChannel('my channel name'));
-  }
-
-  _$MyPlatformPlugin.private(this._methodChannel);
+  _$MyTestPlugin();
 
   @override
   Future<String> failToReceiveStringOnAnythingOtherThanIOS() async {
