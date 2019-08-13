@@ -33,7 +33,7 @@ part 'platform_plugin.g.dart';
 
 @MethodCallPlugin(channelName: "my channel name")
 abstract class PlatformPlugin {
-  Future<String> platform();
+  Future<String> get platform;
   
   static PlatformPlugin create() {
     return _$PlatformPlugin();
@@ -49,7 +49,7 @@ class _$PlatformPlugin extends PlatformPlugin {
   _$PlatformPlugin();
 
   @override
-  Future<String> platform() async {
+  Future<String> get platform async {
     
     final result = await _methodChannel.invokeMethod<String>('platform');
     
