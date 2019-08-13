@@ -27,7 +27,7 @@ import 'package:meta/meta.dart';
 /// }
 /// ```
 ///
-/// Generates:
+/// Will generate:
 ///
 ///```dart
 /// class _$PlatformPlugin extends PlatformPlugin {

@@ -40,7 +40,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
           StreamBuilder<Map<int, MyData>>(
               stream: plugin.counter,
               builder: (context, snapshot) {
-                if(snapshot.hasError){
+                if (snapshot.hasError) {
                   return Text(snapshot.error.toString());
                 }
                 if (!snapshot.hasData) {

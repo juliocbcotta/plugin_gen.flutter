@@ -22,7 +22,7 @@ abstract class PlatformPlugin {
 }
 ```
 
-generates `platform_plugin.g.dart` : 
+will generate `platform_plugin.g.dart` : 
 
 
 ```dart

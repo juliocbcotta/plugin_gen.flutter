@@ -265,10 +265,10 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
             ? 'value'
             : '${valueType.displayName}.fromJson(value)';
         final kk = isCoreDartType(keyType) ? keyType.displayName : 'dynamic';
-        final vk = isCoreDartType(valueType) ? valueType.displayName : 'dynamic';
-        final extraCasting = includeExtraCasting
-            ? 'Map<$kk, $vk>.from(result)'
-            : 'result';
+        final vk =
+            isCoreDartType(valueType) ? valueType.displayName : 'dynamic';
+        final extraCasting =
+            includeExtraCasting ? 'Map<$kk, $vk>.from(result)' : 'result';
         return ''' return $extraCasting
                             .map((key, value) => MapEntry(
                               $key,
@@ -290,6 +290,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
       }
     }
   }
+
   /// TODO : make this type mapping recursive to add support to things like List<List<MyData>> and Map<List<MyData>, List<MyOtherData>>
   String selectParamToInvokeMethod(List<ParameterElement> params) {
     if (params.isEmpty) {
