@@ -1,10 +1,10 @@
-flutter_plugin_generator is part of the project (plugin_gen.flutter)[https://github.com/BugsBunnyBR/plugin_gen.flutter/] and holds the annotations that should
+flutter_plugin_generator is part of the project [plugin_gen.flutter](https://github.com/BugsBunnyBR/plugin_gen.flutter/) and holds the annotations that should
 be placed in the `dev_dependencies` bloc of your `pubspec.yaml`
 
 
 This package is responsible for generating the plugin code for you.
-It works together with (flutter_plugin_annotations)[https://pub.dev/packages/flutter_plugin_annotations], you can read more about
-the annotations in the project (README)[https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md]. 
+It works together with [flutter_plugin_annotations](https://pub.dev/packages/flutter_plugin_annotations), you can read more about
+the annotations in the project [README](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md). 
 
 In the code below we have a simple plugin declaration and the generated code.
 
@@ -45,7 +45,7 @@ class _$PlatformPlugin extends PlatformPlugin {
 ```
 
 The sample above may look silly, but it can save a lot of code when dealing with parameters and return types.
-Refer to the (example)[https://github.com/BugsBunnyBR/plugin_gen.flutter/tree/master/example/] folder, there you will find a plugin project
+Refer to the [example](https://github.com/BugsBunnyBR/plugin_gen.flutter/tree/master/example/) folder, there you will find a plugin project
 with the generated code for more complex usages.
 
 # FAQ
@@ -64,7 +64,7 @@ It can use an abstract class and its methods to generate a concrete implementati
 ### Plugin class
 * Plugin class should be `abstract`.
 * Only methods/fields/getters with return type `Future<*>` will have an implementation generated.
-* Only one `MethodChannel` per class or instance if path replacements are used. (Read More)[https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md]
+* Only one `MethodChannel` per class or instance if path replacements are used. [Read More](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md)
 * A factory for the concrete implementation is not allowed at the moment.
 #### NOTE: Use an static method in the abstract plugin class to encapsulate the instantiation.
 

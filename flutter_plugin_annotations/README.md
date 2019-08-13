@@ -1,4 +1,4 @@
-flutter_plugin_annotations is part of the project (plugin_gen.flutter)[https://github.com/BugsBunnyBR/plugin_gen.flutter/] and holds the annotations that should
+flutter_plugin_annotations is part of the project [plugin_gen.flutter](https://github.com/BugsBunnyBR/plugin_gen.flutter/) and holds the annotations that should
 be placed in the `dependencies` bloc of your `pubspec.yaml`
 
 ## TLDR
@@ -19,7 +19,7 @@ This annotation should be applied to abstract classes that represents a plugin.
 
 - The class should have abstract methods/fields/getters that return `Future<*>`s. Each method will be translated to a `channelMethod` invoke call.
 
-You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/example/lib/platform_plugin.dart).
+You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/example/lib/).
 
 ### channelName
 This value will dictate if the generated plugin will have a `static const MethodChannel` or one `MethodChannel` per instance.

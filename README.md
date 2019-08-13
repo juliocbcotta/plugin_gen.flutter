@@ -39,9 +39,9 @@ abstract class PlatformPlugin {
 }
 ```
 
-(Read More about the annotations)[https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md]
+[Read More about the annotations](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md)
 
-(Read More about the generator)[https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_generator/README.md]
+[Read More about the generator](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_generator/README.md)
 
 
 ## TODO
