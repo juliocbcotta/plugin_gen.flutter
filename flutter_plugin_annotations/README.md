@@ -1,12 +1,12 @@
-flutter_plugin_annotations is part of the project plugin_gen.flutter and holds the annotations that should
+flutter_plugin_annotations is part of the project (plugin_gen.flutter)[https://github.com/BugsBunnyBR/plugin_gen.flutter/] and holds the annotations that should
 be placed in the `dependencies` bloc of your `pubspec.yaml`
 
 ## TLDR
-| Annotation  | Class | Method| Imports |
-| ------------- | ------------- | ------------- | ------------- |
-| `MethodCallPlugin`  | Used to indicate that the abstract class represents a plugin. | NOT APPLICABLE | `import 'package:flutter/services.dart';` |
-| `SupportedPlatforms` | When applied together with `MethodCallPlugin` will limit which platforms the plugin supports.  | When applied to a method will limit which platforms the method supports. | `import 'dart:io';`|
-
+| Annotation  | Class | Method | Field / getter | Imports |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
+| `MethodCallPlugin`  | Used to indicate that the abstract class represents a plugin. | Not applicable | Not applicable | `import 'package:flutter/services.dart';` |
+| `SupportedPlatforms` | When applied together with `MethodCallPlugin` will limit which platforms the plugin supports.  | When applied to a method will limit which platforms the method supports. | When applied to a field will limit which platforms the generated getter supports. | `import 'dart:io';`|
+| `EventChannelStream`| Not applicable | Not applicable | Applicable if the field/getter is of type `Stream<*>`, creates a EventChannel. | `import 'package:flutter/services.dart';` |
 
 
 ## MethodCallPlugin
@@ -17,36 +17,69 @@ This annotation should be applied to abstract classes that represents a plugin.
 
 - As the annotated class will generate a part file, you should add after the file imports `part '${MY_CLASS_FILE_NAME}.g.dart';` to make the project work.
 
-- The class should have abstract methods that return `Future<*>`s. Each method will be translated to a `channelMethod` invoke call.
+- The class should have abstract methods/fields/getters that return `Future<*>`s. Each method will be translated to a `channelMethod` invoke call.
 
 You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/example/lib/platform_plugin.dart).
 
 ### channelName
 This value will dictate if the generated plugin will have a `static const MethodChannel` or one `MethodChannel` per instance.
 
-If `channelName` has any String replacements, i.e `platform_channel_with_id/{id}`, the generated code will have a constructor with a String named parameter `id` that will be replaced 
+If `channelName` has any String replacements, i.e `platform_channel_with_id/{id}`, the generated code will have a constructor with a String named parameter `id` that will be replaced
 in the given `channelName` when creating a new instance of the class. It may be useful when allocating native resources.
 
 For instance:
+
 ```dart
 @MethodCallPlugin(channelName: 'platform_channel_with_id/{id}')
 abstract class PlatformPlugin {
-  
+
   Future<String> platform();
 
   static PlatformPlugin create(String id) {
     return _$PlatformPlugin(id: id);
   }
 }
-
 ```
+
+## EventChannelStream
+`EventChannelStream` should be applied to fields or getters of type `Stream<*>`. **It does not support methods or path replacements**. It will generated a `static const EventChannel` and a private `Stream<dynamic>` that will be reused for all readings done in a given field/getter.
+
+
+For instance:
+
+```dart
+@MethodCallPlugin(channelName: 'platform channel')
+abstract class PlatformPlugin {
+
+  @EventChannelStream('my event channel')
+  Stream<String> get platform;
+
+}
+```
+
+will generate:
+
+```dart
+  static const EventChannel _platformEventChannel =
+      const EventChannel('my event channel');
+
+  final _platform = _platformEventChannel.receiveBroadcastStream();
+
+  @override
+  Stream<String> get platform {
+    return _platform.map((result) {
+      return retult;
+    });
+  }
+```
+
 
 ## SupportedPlatforms
 `SupportedPlatforms`, when applied to the same class as `MethodCallPlugin` will work as a filter when declaring more restrict usage in a method.
 
 - As this annotation will generate code that relies in `dart:io`, you should add the import `import 'dart:io';` to the top of your class file.
 
-Methods annotated with `SupportedPlatforms` with a non empty list of `SupportedPlatforms.only` will generate code to raise exceptions for each platform not listed in the `only` field.
+Methods/fields/getters annotated with `SupportedPlatforms` with a non empty list of `SupportedPlatforms.only` will generate code to raise exceptions for each platform not listed in the `only` field.
 
 For instance:
 ```dart
@@ -76,7 +109,6 @@ will generate
     final result = await _methodChannel.invokeMethod<String>('platform');
     return result;
   }
-
 ```
 
 but if you remove the annotation from the class
@@ -122,4 +154,3 @@ will generate
 ```
 
 If your plugin is meant to run just in Android and IOS and you want to have a cleaner code generated, use `SupportedPlatforms` in the class.
-

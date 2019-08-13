@@ -6,6 +6,7 @@ part 'platform_plugin.g.dart';
 
 @MethodCallPlugin(channelName: 'platform_channel_with_id/{id}')
 abstract class PlatformPlugin {
+
   Future<String> platform();
 
   static PlatformPlugin create(String id) {
