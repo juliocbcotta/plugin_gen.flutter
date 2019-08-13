@@ -9,12 +9,13 @@ environment:
 
 dependencies:
   meta: ^1.1.6
-  build: ^1.0.2
-  source_gen: ^0.9.3
+  build: ^1.1.5
+  source_gen: ^0.9.4
   analyzer: '>=0.35.0 <0.38.0'
-  flutter_plugin_annotations: ^0.0.5
+  flutter_plugin_annotations:
+    path: ../flutter_plugin_annotations
 
 dev_dependencies:
   test: ^1.6.5
-  build_test: ^0.10.4
-  build_runner: ^1.1.2
+  build_test: ^0.10.8
+  build_runner: ^1.6.5
