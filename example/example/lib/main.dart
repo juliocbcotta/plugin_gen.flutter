@@ -37,15 +37,14 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          StreamBuilder<int>(
-            key: ValueKey('test'),
+          StreamBuilder<Map<int, MyData>>(
               stream: plugin.counter,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Text('counter not initialized');
-                }
                 if(snapshot.hasError){
                   return Text(snapshot.error.toString());
+                }
+                if (!snapshot.hasData) {
+                  return Text('counter not initialized');
                 }
                 return Text(snapshot.data.toString());
               }),

@@ -18,12 +18,17 @@ class _$MyTestPlugin extends MyTestPlugin {
   final _counter = _counterEventChannel.receiveBroadcastStream();
 
   @override
-  Stream<int> get counter {
-    if (Platform.isIOS)
-      throw UnsupportedError('Functionality counter is not available on IOS.');
-
+  Stream<Map<int, MyData>> get counter {
     return _counter.map((result) {
-      return result;
+      return Map<int, dynamic>.from(result)
+          .map((key, value) => MapEntry(
+                key,
+                Map<String, dynamic>.from(value),
+              ))
+          .map((key, value) => MapEntry(
+                key,
+                MyData.fromJson(value),
+              ));
     });
   }
 

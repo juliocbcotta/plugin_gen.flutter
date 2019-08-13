@@ -14,10 +14,7 @@ abstract class MyTestPlugin {
   /// This counter will emit a value every time the underlying platform do so.
   /// This is done using a static EventChannel.
   @EventChannelStream(channelName: 'my event channel')
-  @SupportedPlatforms(only: [
-    SupportedPlatform.Android,
-  ])
-  Stream<int> get counter;
+  Stream<Map<int, MyData>> get counter;
 
   /// startCounter will trigger an action that will make counter start emitting
   Future<void> get startCounter;
