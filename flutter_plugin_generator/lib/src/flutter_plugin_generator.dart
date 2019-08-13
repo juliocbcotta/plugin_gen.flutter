@@ -77,7 +77,9 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   }
 
   String declareMethods(
-      ClassElement element, List<SupportedPlatform> pluginSupportedPlatforms) {
+    ClassElement element,
+    List<SupportedPlatform> pluginPlatforms,
+  ) {
     final buffer = StringBuffer();
 
     final methods = element.methods.where((method) {
@@ -91,11 +93,11 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
         .toList();
 
     fields.forEach((field) {
-      buffer.write(declareGetter(field, pluginSupportedPlatforms));
+      buffer.write(declareGetter(field, pluginPlatforms));
     });
 
     methods.forEach((method) {
-      buffer.write(declareMethod(method, pluginSupportedPlatforms));
+      buffer.write(declareMethod(method, pluginPlatforms));
     });
 
     return buffer.toString();
@@ -103,25 +105,25 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
 
   String declareGetter(
     FieldElement field,
-    List<SupportedPlatform> pluginSupportedPlatforms,
+    List<SupportedPlatform> pluginPlatforms,
   ) {
     final buffer = StringBuffer();
-    final methodSupportedPlatforms =
+    final fieldPlatforms =
         findSupportedPlatforms(field.metadata + field.getter.metadata);
 
     final fieldName = field.displayName;
-
     final fieldType = field.type.displayName;
+
     buffer.writeln('@override');
     buffer.writeln('$fieldType get $fieldName async {');
 
-    buffer.writeln(processSupportedPlatforms(
-        fieldName, pluginSupportedPlatforms, methodSupportedPlatforms));
+    buffer.writeln(
+        processSupportedPlatforms(fieldName, pluginPlatforms, fieldPlatforms));
 
     final innerType = (field.type as ParameterizedType).typeArguments[0];
     final invokeMethod = selectInvokeMethod(innerType);
 
-    final resultMapped = mapResultToDart(innerType);
+    final resultMapped = mapResultToDart(innerType, false);
 
     buffer.writeln(
         'final result = await _methodChannel.$invokeMethod(\'$fieldName\');');
@@ -133,10 +135,10 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
 
   String declareMethod(
     MethodElement method,
-    List<SupportedPlatform> pluginSupportedPlatforms,
+    List<SupportedPlatform> pluginPlatforms,
   ) {
     final buffer = StringBuffer();
-    final methodSupportedPlatforms = findSupportedPlatforms(method.metadata);
+    final methodPlatforms = findSupportedPlatforms(method.metadata);
 
     final methodName = method.displayName;
 
@@ -146,14 +148,14 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     buffer.writeln('$methodReturnType $methodName($methodParams) async {');
 
     buffer.writeln(processSupportedPlatforms(
-        methodName, pluginSupportedPlatforms, methodSupportedPlatforms));
+        methodName, pluginPlatforms, methodPlatforms));
 
     final innerType = (method.returnType as ParameterizedType).typeArguments[0];
     final invokeMethod = selectInvokeMethod(innerType);
     final invokeParams = selectParamToInvokeMethod(method.parameters);
     final separator = invokeParams.isEmpty ? '' : ',';
 
-    final resultMapped = mapResultToDart(innerType);
+    final resultMapped = mapResultToDart(innerType, false);
 
     buffer.writeln(
         'final result = await _methodChannel.$invokeMethod(\'$methodName\'$separator $invokeParams);');
@@ -224,16 +226,21 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
         type.isDartCoreNull;
   }
 
-  String mapResultToDart(DartType type) {
+  /// NOTE : When this method is used from EventChannel is need to set includeExtraCasting = true,
+  /// as receiveBroadcastStream() only emits dynamic and we need to change that to something
+  /// like a list, or map.
+  /// TODO : make this type mapping recursive to add support to things like List<List<MyData>> and Map<List<MyData>, List<MyOtherData>>
+  String mapResultToDart(DartType type, bool includeExtraCasting) {
     if (isCoreDartType(type)) {
       return 'return result;';
     } else if (isDartList(type)) {
       final innerType = (type as ParameterizedType).typeArguments[0];
-
+      final extraCasting =
+          includeExtraCasting ? 'List.castFrom(result)' : 'result';
       if (isCoreDartType(innerType)) {
-        return 'return result;';
+        return 'return $extraCasting;';
       } else {
-        return 'return result' +
+        return 'return $extraCasting' +
             '.map((item) => Map<String, dynamic>.from(item))' +
             '.map((item) => ${innerType.displayName}.fromJson(item)).toList();';
       }
@@ -257,8 +264,12 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
         final value2 = isCoreDartType(valueType)
             ? 'value'
             : '${valueType.displayName}.fromJson(value)';
-
-        return ''' return result
+        final kk = isCoreDartType(keyType) ? keyType.displayName : 'dynamic';
+        final vk = isCoreDartType(valueType) ? valueType.displayName : 'dynamic';
+        final extraCasting = includeExtraCasting
+            ? 'Map<$kk, $vk>.from(result)'
+            : 'result';
+        return ''' return $extraCasting
                             .map((key, value) => MapEntry(
                               $key,
                               $value,
@@ -269,10 +280,17 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
                             ));''';
       }
     } else {
-      return 'return ${type.displayName}.fromJson(result);';
+      if (includeExtraCasting) {
+        return '''
+        final item = Map<String, dynamic>.from(result);
+        return ${type.displayName}.fromJson(item);''';
+      } else {
+        return '''
+        return ${type.displayName}.fromJson(result);''';
+      }
     }
   }
-
+  /// TODO : make this type mapping recursive to add support to things like List<List<MyData>> and Map<List<MyData>, List<MyOtherData>>
   String selectParamToInvokeMethod(List<ParameterElement> params) {
     if (params.isEmpty) {
       return '';
@@ -355,54 +373,34 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   }
 
   String generatePluginTemplate(Element element, ConstantReader annotation) {
+    final rootElement = (element as ClassElement);
     final channelName = annotation.read('channelName').stringValue;
     final className = element.displayName;
 
-    final factory = createFactory(element, className, channelName);
+    final pluginPlatforms = findSupportedPlatforms(element.metadata);
 
-    final pluginSupportedPlatforms = findSupportedPlatforms(element.metadata);
+    final factory = createFactory(rootElement, className, channelName);
 
-    final streamGetters = (element as ClassElement)
-        .fields
-        .where((field) => isDartStream(field.type))
-        .map((field) {
-      final channelName =
-          findStreamChannelName(field.metadata + field.getter.metadata);
-      final innerType = (field.type as ParameterizedType).typeArguments[0];
-      final result = mapResultToDart(innerType);
-      final methodSupportedPlatforms =
-          findSupportedPlatforms(field.metadata + field.getter.metadata);
-      final platformOnly = processSupportedPlatforms(field.displayName,
-          pluginSupportedPlatforms, methodSupportedPlatforms);
-      return '''
-        static const EventChannel _${field.displayName}EventChannel = const EventChannel('$channelName');
-        
-        final _${field.displayName} = _${field.displayName}EventChannel.receiveBroadcastStream();
-        
-        @override
-        ${field.type.displayName} get ${field.displayName} {
-            $platformOnly
-        return  _${field.displayName}.map((result){  $result });
-        }
-      ''';
-    }).join('\n');
+    final streamGetters = createStreamGetters(rootElement, pluginPlatforms);
+
+    final methods = declareMethods(rootElement, pluginPlatforms);
 
     return '''
     
     class _\$$className extends $className {
-    
-    
+        
       $factory
     
       $streamGetters
     
-      ${declareMethods(element, pluginSupportedPlatforms)}
+      $methods
     
     }  
     ''';
   }
 
-  String createFactory(Element element, String className, String channelName) {
+  String createFactory(
+      ClassElement element, String className, String channelName) {
     final pathRegexp = RegExp('(\{.*?\})');
     final groups =
         pathRegexp.allMatches(channelName).map((match) => match.group(0));
@@ -456,5 +454,41 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
       }
     });
     return buffer.toString();
+  }
+
+  String createStreamGetters(
+    ClassElement element,
+    List<SupportedPlatform> pluginPlatforms,
+  ) {
+    return element.fields
+        .where((field) => isDartStream(field.type))
+        .map((field) {
+      final channelName =
+          findStreamChannelName(field.metadata + field.getter.metadata);
+
+      final fieldPlatforms =
+          findSupportedPlatforms(field.metadata + field.getter.metadata);
+      final platformOnly = processSupportedPlatforms(
+          field.displayName, pluginPlatforms, fieldPlatforms);
+      final innerType = (field.type as ParameterizedType).typeArguments[0];
+      final result = mapResultToDart(innerType, true);
+
+      if (channelName != null && channelName.isNotEmpty) {
+        return '''
+        static const EventChannel _${field.displayName}EventChannel = const EventChannel('$channelName');
+        
+        final _${field.displayName} = _${field.displayName}EventChannel.receiveBroadcastStream();
+        
+        @override
+        ${field.type.displayName} get ${field.displayName} {
+            $platformOnly
+        return  _${field.displayName}.map((result){  $result });
+        }
+      ''';
+      } else {
+        throw UnsupportedError(
+            'No @EventChannelStream annotation found for ${field.displayName}');
+      }
+    }).join('\n');
   }
 }
