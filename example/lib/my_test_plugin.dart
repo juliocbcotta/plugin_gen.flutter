@@ -11,28 +11,42 @@ part 'my_test_plugin.g.dart';
 ])
 @MethodCallPlugin(channelName: "my channel name")
 abstract class MyTestPlugin {
+  /// This counter will emit a value every time the underlying platform do so.
+  /// This is done using a static EventChannel.
+  @EventChannelStream(channelName: 'my event channel')
+  @SupportedPlatforms(only: [
+    SupportedPlatform.Android,
+  ])
+  Stream<int> get counter;
+
+  /// startCounter will trigger an action that will make counter start emitting
+  Future<void> get startCounter;
+
+  /// stopCounter will cancel any previous action and make counter stop emitting
+  Future<void> get stopCounter;
+
   @SupportedPlatforms(only: [
     SupportedPlatform.IOS,
   ])
-  Future<String> failToReceiveStringOnAnythingOtherThanIOS();
+  Future<String> get failToReceiveStringOnAnythingOtherThanIOS;
 
-  Future<String> receiveString();
+  Future<String> get receiveString;
 
-  Future<void> receiveVoid();
+  Future<void> get receiveVoid;
 
-  Future<Null> receiveNull();
+  Future<Null> get receiveNull;
 
-  Future<int> receiveInt();
+  Future<int> get receiveInt;
 
-  Future<double> receiveDouble();
+  Future<double> get receiveDouble;
 
-  Future<MyData> receiveMyData();
+  Future<MyData> get receiveMyData;
 
-  Future<List<String>> receiveSimpleStringList();
+  Future<List<String>> get receiveSimpleStringList;
 
-  Future<List<int>> receiveSimpleIntList();
+  Future<List<int>> get receiveSimpleIntList;
 
-  Future<List<MyData>> receiveMyDataList();
+  Future<List<MyData>> get receiveMyDataList;
 
   Future<String> sendString(String str);
 

@@ -37,6 +37,35 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
+          StreamBuilder<int>(
+            key: ValueKey('test'),
+              stream: plugin.counter,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text('counter not initialized');
+                }
+                if(snapshot.hasError){
+                  return Text(snapshot.error.toString());
+                }
+                return Text(snapshot.data.toString());
+              }),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () async {
+                  await plugin.startCounter;
+                },
+                child: Text('start counter'),
+              ),
+              RaisedButton(
+                onPressed: () async {
+                  await plugin.stopCounter;
+                },
+                child: Text('stop counter'),
+              ),
+            ],
+          ),
           SizedBox(
             height: 200,
             child: Center(
@@ -48,7 +77,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveString();
+                    final d = await plugin.receiveString;
                     setState(() {
                       text = d.toString();
                     });
@@ -59,7 +88,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
                   onPressed: () async {
                     try {
                       final d = await plugin
-                          .failToReceiveStringOnAnythingOtherThanIOS();
+                          .failToReceiveStringOnAnythingOtherThanIOS;
                       setState(() {
                         text = d.toString();
                       });
@@ -79,7 +108,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
             children: <Widget>[
               RaisedButton(
                 onPressed: () async {
-                  await plugin.receiveVoid();
+                  await plugin.receiveVoid;
                   setState(() {
                     text = 'void';
                   });
@@ -88,7 +117,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
               ),
               RaisedButton(
                 onPressed: () async {
-                  final d = await plugin.receiveNull();
+                  final d = await plugin.receiveNull;
                   setState(() {
                     text = '$d';
                   });
@@ -102,7 +131,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveInt();
+                    final d = await plugin.receiveInt;
                     setState(() {
                       text = d.toString();
                     });
@@ -111,7 +140,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
                 ),
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveDouble();
+                    final d = await plugin.receiveDouble;
                     setState(() {
                       text = d.toString();
                     });
@@ -120,7 +149,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
                 ),
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveSimpleStringList();
+                    final d = await plugin.receiveSimpleStringList;
                     setState(() {
                       text = d.join(',');
                     });
@@ -133,7 +162,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveSimpleIntList();
+                    final d = await plugin.receiveSimpleIntList;
                     setState(() {
                       text = d.join(',');
                     });
@@ -194,7 +223,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
                 ),
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveMyData();
+                    final d = await plugin.receiveMyData;
                     setState(() {
                       text = d.toString();
                     });
@@ -207,7 +236,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.receiveMyDataList();
+                    final d = await plugin.receiveMyDataList;
                     setState(() {
                       text = d.join(',\n');
                     });

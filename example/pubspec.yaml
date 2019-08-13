@@ -17,7 +17,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: ^1.0.0
+  build_runner: ^1.6.5
 
   flutter_plugin_generator:
     path: ../flutter_plugin_generator

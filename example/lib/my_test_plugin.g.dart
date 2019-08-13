@@ -12,8 +12,35 @@ class _$MyTestPlugin extends MyTestPlugin {
 
   _$MyTestPlugin();
 
+  static const EventChannel _counterEventChannel =
+      const EventChannel('my event channel');
+
+  final _counter = _counterEventChannel.receiveBroadcastStream();
+
   @override
-  Future<String> failToReceiveStringOnAnythingOtherThanIOS() async {
+  Stream<int> get counter {
+    if (Platform.isIOS)
+      throw UnsupportedError('Functionality counter is not available on IOS.');
+
+    return _counter.map((result) {
+      return result;
+    });
+  }
+
+  @override
+  Future<void> get startCounter async {
+    final result = await _methodChannel.invokeMethod<void>('startCounter');
+    return result;
+  }
+
+  @override
+  Future<void> get stopCounter async {
+    final result = await _methodChannel.invokeMethod<void>('stopCounter');
+    return result;
+  }
+
+  @override
+  Future<String> get failToReceiveStringOnAnythingOtherThanIOS async {
     if (Platform.isAndroid)
       throw UnsupportedError(
           'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Android.');
@@ -24,58 +51,58 @@ class _$MyTestPlugin extends MyTestPlugin {
   }
 
   @override
-  Future<String> receiveString() async {
+  Future<String> get receiveString async {
     final result = await _methodChannel.invokeMethod<String>('receiveString');
     return result;
   }
 
   @override
-  Future<void> receiveVoid() async {
+  Future<void> get receiveVoid async {
     final result = await _methodChannel.invokeMethod<void>('receiveVoid');
     return result;
   }
 
   @override
-  Future<Null> receiveNull() async {
+  Future<Null> get receiveNull async {
     final result = await _methodChannel.invokeMethod<Null>('receiveNull');
     return result;
   }
 
   @override
-  Future<int> receiveInt() async {
+  Future<int> get receiveInt async {
     final result = await _methodChannel.invokeMethod<int>('receiveInt');
     return result;
   }
 
   @override
-  Future<double> receiveDouble() async {
+  Future<double> get receiveDouble async {
     final result = await _methodChannel.invokeMethod<double>('receiveDouble');
     return result;
   }
 
   @override
-  Future<MyData> receiveMyData() async {
+  Future<MyData> get receiveMyData async {
     final result =
         await _methodChannel.invokeMapMethod<String, dynamic>('receiveMyData');
     return MyData.fromJson(result);
   }
 
   @override
-  Future<List<String>> receiveSimpleStringList() async {
+  Future<List<String>> get receiveSimpleStringList async {
     final result = await _methodChannel
         .invokeListMethod<String>('receiveSimpleStringList');
     return result;
   }
 
   @override
-  Future<List<int>> receiveSimpleIntList() async {
+  Future<List<int>> get receiveSimpleIntList async {
     final result =
         await _methodChannel.invokeListMethod<int>('receiveSimpleIntList');
     return result;
   }
 
   @override
-  Future<List<MyData>> receiveMyDataList() async {
+  Future<List<MyData>> get receiveMyDataList async {
     final result =
         await _methodChannel.invokeListMethod<dynamic>('receiveMyDataList');
     return result
