@@ -1,6 +1,7 @@
 ## [0.0.6]
 
 - Added EventChannelStream annotation.
+- Updated documentation.
 
 ## [0.0.5]
 

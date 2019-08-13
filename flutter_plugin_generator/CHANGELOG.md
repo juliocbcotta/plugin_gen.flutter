@@ -1,7 +1,9 @@
 ## [0.0.6]
 
-- Added support to EventChannel using EventChannelStream annotation.
-- Added support to use fields and getters.
+- Added support to EventChannel using EventChannelStream annotation in fields and getters.
+- Added support to use fields and getters for MethodChannel calls.
+- Included README.md.
+- Updated documentation.
 
 
 ## [0.0.5]
