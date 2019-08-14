@@ -187,13 +187,13 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   String selectInvokeMethod(DartType type) {
     if (isCoreDartType(type)) {
       return 'invokeMethod<${type.displayName}>';
-    } else if (isDartList(type)) {
+    } else if (type.isDartCoreList) {
       final innerType = (type as ParameterizedType).typeArguments[0];
       final inner =
           isCoreDartType(innerType) ? '${innerType.displayName}' : 'dynamic';
 
       return 'invokeListMethod<$inner>';
-    } else if (isDartMap(type)) {
+    } else if (type.isDartCoreMap) {
       final keyType = (type as ParameterizedType).typeArguments[0];
       final valueType = (type as ParameterizedType).typeArguments[1];
 
@@ -209,13 +209,6 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
     return 'invokeMapMethod<String, dynamic>';
   }
 
-  bool isDartList(DartType type) {
-    return type.displayName.startsWith("List<");
-  }
-
-  bool isDartMap(DartType type) {
-    return type.displayName.startsWith("Map<");
-  }
 
   bool isCoreDartType(DartType type) {
     return type.isDartCoreString ||
@@ -233,7 +226,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
   String mapResultToDart(DartType type, bool includeExtraCasting) {
     if (isCoreDartType(type)) {
       return 'return result;';
-    } else if (isDartList(type)) {
+    } else if (type.isDartCoreList) {
       final innerType = (type as ParameterizedType).typeArguments[0];
       final extraCasting =
           includeExtraCasting ? 'List.castFrom(result)' : 'result';
@@ -245,7 +238,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
             '.map((item) => ${innerType.displayName}.fromJson(item)).toList();';
       }
     }
-    if (isDartMap(type)) {
+    if (type.isDartCoreMap) {
       final keyType = (type as ParameterizedType).typeArguments[0];
       final valueType = (type as ParameterizedType).typeArguments[1];
 
@@ -301,14 +294,14 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
 
       if (isCoreDartType(type)) {
         return param.displayName;
-      } else if (isDartList(type)) {
+      } else if (type.isDartCoreList) {
         final innerType = (type as ParameterizedType).typeArguments[0];
         final mapping = isCoreDartType(innerType)
             ? ''
             : '.map((item) => item.toJson()).toList()';
 
         return '${param.displayName}$mapping';
-      } else if (isDartMap(type)) {
+      } else if (type.isDartCoreMap) {
         final keyType = (type as ParameterizedType).typeArguments[0];
         final valueType = (type as ParameterizedType).typeArguments[1];
 
@@ -328,7 +321,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
 
         if (isCoreDartType(type)) {
           return '\'${param.displayName}\': ${param.displayName}';
-        } else if (isDartList(type)) {
+        } else if (type.isDartCoreList) {
           final innerType = (type as ParameterizedType).typeArguments[0];
 
           final mapping = isCoreDartType(innerType)
@@ -336,7 +329,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<MethodCallPlugin> {
               : '.map((item) => item.toJson()).toList()';
 
           return '\'${param.displayName}\' :  ${param.displayName}$mapping';
-        } else if (isDartMap(type)) {
+        } else if (type.isDartCoreMap) {
           final keyType = (type as ParameterizedType).typeArguments[0];
           final valueType = (type as ParameterizedType).typeArguments[1];
 

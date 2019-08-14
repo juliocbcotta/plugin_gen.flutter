@@ -1,3 +1,8 @@
+## [0.0.7]
+
+- Updated analyzer to 0.37.1.
+
+
 ## [0.0.6]
 
 - Added support to EventChannel using EventChannelStream annotation in fields and getters.
