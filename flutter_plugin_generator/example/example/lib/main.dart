@@ -37,6 +37,15 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
+          RaisedButton(
+            onPressed: () async {
+              final d = await plugin.mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData();
+              setState(() {
+                text = d.toString();
+              });
+            },
+            child: Text('receive my super complex map of map...'),
+          ),
           StreamBuilder<Map<int, MyData>>(
               stream: plugin.counter,
               builder: (context, snapshot) {

@@ -89,6 +89,37 @@ abstract class MyTestPlugin {
     Map<MyData, MyOtherData> map4,
   });
 
+  Future<List<List<int>>> listOfListOfInt();
+
+  Future<List<List<MyData>>> listOfListOfMyData();
+
+  Future<List<Map<String, String>>> listOfMapStringString();
+
+  Future<List<Map<MyData, String>>> listOfMapMyDataString();
+
+  Future<List<Map<String, MyData>>> listOfMapStringMyData();
+
+  Future<List<Map<MyData, MyData>>> listOfMapMyDataMyData();
+
+  Future<Map<List<int>, String>> mapOfListIntAndString();
+
+  Future<Map<List<int>, MyData>> mapOfListIntAndMyData();
+
+  Future<Map<List<MyData>, String>> mapOfListMyDataAndString();
+
+  Future<Map<List<MyData>, MyData>> mapOfListMyDataAndMyData();
+
+  Future<Map<List<MyData>, List<MyData>>> mapOfListMyDataAndListOfMyData();
+
+  Future<Map<Map<int, int>, Map<String, String>>>
+      mapOfMapIntIntAndMapStringString();
+
+  Future<Map<Map<MyData, MyOtherData>, Map<MyOtherData, MyData>>>
+  mapOfMapMyDataMyOtherDataAndMapMyOtherDataMyData();
+
+  Future<Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>, Map<MyOtherData, MyData>>>
+  mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData();
+
   static MyTestPlugin create() {
     return _$MyTestPlugin();
   }

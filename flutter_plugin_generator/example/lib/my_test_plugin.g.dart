@@ -20,20 +20,13 @@ class _$MyTestPlugin extends MyTestPlugin {
 
   @override
   Stream<Map<int, MyData>> get counter {
-    return _counter.map((result) {
-      return Map<int, dynamic>.from(result)
-          .map(
-            (key, value) => MapEntry(
-              key,
-              Map<String, dynamic>.from(value),
-            ),
-          )
-          .map(
-            (key, value) => MapEntry(
-              key,
-              MyData.fromJson(value),
-            ),
-          );
+    return _counter.map((item) {
+      return Map<int, dynamic>.from(item).map(
+        (key, value) => MapEntry(
+          key,
+          MyData.fromJson(Map<String, dynamic>.from(value)),
+        ),
+      );
     });
   }
 
@@ -128,8 +121,7 @@ class _$MyTestPlugin extends MyTestPlugin {
         await _methodChannel.invokeListMethod<dynamic>('receiveMyDataList');
 
     return result
-        .map((item) => Map<String, dynamic>.from(item))
-        .map((item) => MyData.fromJson(item))
+        .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
         .toList();
   }
 
@@ -183,8 +175,7 @@ class _$MyTestPlugin extends MyTestPlugin {
         'sendMyDataList', list.map((item) => item.toJson()).toList());
 
     return result
-        .map((item) => Map<String, dynamic>.from(item))
-        .map((item) => MyData.fromJson(item))
+        .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
         .toList();
   }
 
@@ -221,19 +212,12 @@ class _$MyTestPlugin extends MyTestPlugin {
     final result = await _methodChannel
         .invokeMapMethod<String, dynamic>('receiveSimpleKeyComplexValueMap');
 
-    return result
-        .map(
-          (key, value) => MapEntry(
-            key,
-            Map<String, dynamic>.from(value),
-          ),
-        )
-        .map(
-          (key, value) => MapEntry(
-            key,
-            MyOtherData.fromJson(value),
-          ),
-        );
+    return result.map(
+      (key, value) => MapEntry(
+        key,
+        MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+      ),
+    );
   }
 
   @override
@@ -241,19 +225,12 @@ class _$MyTestPlugin extends MyTestPlugin {
     final result = await _methodChannel
         .invokeMapMethod<dynamic, String>('receiveComplexKeySimpleValueMap');
 
-    return result
-        .map(
-          (key, value) => MapEntry(
-            Map<String, dynamic>.from(key),
-            value,
-          ),
-        )
-        .map(
-          (key, value) => MapEntry(
-            MyData.fromJson(key),
-            value,
-          ),
-        );
+    return result.map(
+      (key, value) => MapEntry(
+        MyData.fromJson(Map<String, dynamic>.from(key)),
+        value,
+      ),
+    );
   }
 
   @override
@@ -261,19 +238,12 @@ class _$MyTestPlugin extends MyTestPlugin {
     final result = await _methodChannel
         .invokeMapMethod<dynamic, dynamic>('receiveComplexMap');
 
-    return result
-        .map(
-          (key, value) => MapEntry(
-            Map<String, dynamic>.from(key),
-            Map<String, dynamic>.from(value),
-          ),
-        )
-        .map(
-          (key, value) => MapEntry(
-            MyData.fromJson(key),
-            MyOtherData.fromJson(value),
-          ),
-        );
+    return result.map(
+      (key, value) => MapEntry(
+        MyData.fromJson(Map<String, dynamic>.from(key)),
+        MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+      ),
+    );
   }
 
   @override
@@ -299,19 +269,12 @@ class _$MyTestPlugin extends MyTestPlugin {
           ),
         ));
 
-    return result
-        .map(
-          (key, value) => MapEntry(
-            key,
-            Map<String, dynamic>.from(value),
-          ),
-        )
-        .map(
-          (key, value) => MapEntry(
-            key,
-            MyOtherData.fromJson(value),
-          ),
-        );
+    return result.map(
+      (key, value) => MapEntry(
+        key,
+        MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+      ),
+    );
   }
 
   @override
@@ -327,19 +290,12 @@ class _$MyTestPlugin extends MyTestPlugin {
           ),
         ));
 
-    return result
-        .map(
-          (key, value) => MapEntry(
-            Map<String, dynamic>.from(key),
-            value,
-          ),
-        )
-        .map(
-          (key, value) => MapEntry(
-            MyData.fromJson(key),
-            value,
-          ),
-        );
+    return result.map(
+      (key, value) => MapEntry(
+        MyData.fromJson(Map<String, dynamic>.from(key)),
+        value,
+      ),
+    );
   }
 
   @override
@@ -355,19 +311,12 @@ class _$MyTestPlugin extends MyTestPlugin {
           ),
         ));
 
-    return result
-        .map(
-          (key, value) => MapEntry(
-            Map<String, dynamic>.from(key),
-            Map<String, dynamic>.from(value),
-          ),
-        )
-        .map(
-          (key, value) => MapEntry(
-            MyData.fromJson(key),
-            MyOtherData.fromJson(value),
-          ),
-        );
+    return result.map(
+      (key, value) => MapEntry(
+        MyData.fromJson(Map<String, dynamic>.from(key)),
+        MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+      ),
+    );
   }
 
   @override
@@ -401,5 +350,223 @@ class _$MyTestPlugin extends MyTestPlugin {
     });
 
     return result;
+  }
+
+  @override
+  Future<List<List<int>>> listOfListOfInt() async {
+    final result =
+        await _methodChannel.invokeListMethod<dynamic>('listOfListOfInt');
+
+    return result.map((item) => List.castFrom(item)).toList();
+  }
+
+  @override
+  Future<List<List<MyData>>> listOfListOfMyData() async {
+    final result =
+        await _methodChannel.invokeListMethod<dynamic>('listOfListOfMyData');
+
+    return result
+        .map((item) => List.castFrom(item)
+            .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+            .toList())
+        .toList();
+  }
+
+  @override
+  Future<List<Map<String, String>>> listOfMapStringString() async {
+    final result =
+        await _methodChannel.invokeListMethod<dynamic>('listOfMapStringString');
+
+    return result.map((item) => Map<String, String>.from(item)).toList();
+  }
+
+  @override
+  Future<List<Map<MyData, String>>> listOfMapMyDataString() async {
+    final result =
+        await _methodChannel.invokeListMethod<dynamic>('listOfMapMyDataString');
+
+    return result
+        .map((item) => Map<dynamic, String>.from(item).map(
+              (key, value) => MapEntry(
+                MyData.fromJson(Map<String, dynamic>.from(key)),
+                value,
+              ),
+            ))
+        .toList();
+  }
+
+  @override
+  Future<List<Map<String, MyData>>> listOfMapStringMyData() async {
+    final result =
+        await _methodChannel.invokeListMethod<dynamic>('listOfMapStringMyData');
+
+    return result
+        .map((item) => Map<String, dynamic>.from(item).map(
+              (key, value) => MapEntry(
+                key,
+                MyData.fromJson(Map<String, dynamic>.from(value)),
+              ),
+            ))
+        .toList();
+  }
+
+  @override
+  Future<List<Map<MyData, MyData>>> listOfMapMyDataMyData() async {
+    final result =
+        await _methodChannel.invokeListMethod<dynamic>('listOfMapMyDataMyData');
+
+    return result
+        .map((item) => Map<dynamic, dynamic>.from(item).map(
+              (key, value) => MapEntry(
+                MyData.fromJson(Map<String, dynamic>.from(key)),
+                MyData.fromJson(Map<String, dynamic>.from(value)),
+              ),
+            ))
+        .toList();
+  }
+
+  @override
+  Future<Map<List<int>, String>> mapOfListIntAndString() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, String>('mapOfListIntAndString');
+
+    return result.map(
+      (key, value) => MapEntry(
+        List.castFrom(key),
+        value,
+      ),
+    );
+  }
+
+  @override
+  Future<Map<List<int>, MyData>> mapOfListIntAndMyData() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, dynamic>('mapOfListIntAndMyData');
+
+    return result.map(
+      (key, value) => MapEntry(
+        List.castFrom(key),
+        MyData.fromJson(Map<String, dynamic>.from(value)),
+      ),
+    );
+  }
+
+  @override
+  Future<Map<List<MyData>, String>> mapOfListMyDataAndString() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, String>('mapOfListMyDataAndString');
+
+    return result.map(
+      (key, value) => MapEntry(
+        List.castFrom(key)
+            .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+            .toList(),
+        value,
+      ),
+    );
+  }
+
+  @override
+  Future<Map<List<MyData>, MyData>> mapOfListMyDataAndMyData() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, dynamic>('mapOfListMyDataAndMyData');
+
+    return result.map(
+      (key, value) => MapEntry(
+        List.castFrom(key)
+            .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+            .toList(),
+        MyData.fromJson(Map<String, dynamic>.from(value)),
+      ),
+    );
+  }
+
+  @override
+  Future<Map<List<MyData>, List<MyData>>>
+      mapOfListMyDataAndListOfMyData() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, dynamic>('mapOfListMyDataAndListOfMyData');
+
+    return result.map(
+      (key, value) => MapEntry(
+        List.castFrom(key)
+            .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+            .toList(),
+        List.castFrom(value)
+            .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+            .toList(),
+      ),
+    );
+  }
+
+  @override
+  Future<Map<Map<int, int>, Map<String, String>>>
+      mapOfMapIntIntAndMapStringString() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, dynamic>('mapOfMapIntIntAndMapStringString');
+
+    return result.map(
+      (key, value) => MapEntry(
+        Map<int, int>.from(key),
+        Map<String, String>.from(value),
+      ),
+    );
+  }
+
+  @override
+  Future<Map<Map<MyData, MyOtherData>, Map<MyOtherData, MyData>>>
+      mapOfMapMyDataMyOtherDataAndMapMyOtherDataMyData() async {
+    final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
+        'mapOfMapMyDataMyOtherDataAndMapMyOtherDataMyData');
+
+    return result.map(
+      (key, value) => MapEntry(
+        Map<dynamic, dynamic>.from(key).map(
+          (key, value) => MapEntry(
+            MyData.fromJson(Map<String, dynamic>.from(key)),
+            MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+          ),
+        ),
+        Map<dynamic, dynamic>.from(value).map(
+          (key, value) => MapEntry(
+            MyOtherData.fromJson(Map<String, dynamic>.from(key)),
+            MyData.fromJson(Map<String, dynamic>.from(value)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<
+          Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+              Map<MyOtherData, MyData>>>
+      mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData() async {
+    final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
+        'mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData');
+
+    return result.map(
+      (key, value) => MapEntry(
+        Map<dynamic, dynamic>.from(key).map(
+          (key, value) => MapEntry(
+            List.castFrom(key)
+                .map((item) => Map<dynamic, dynamic>.from(item).map(
+                      (key, value) => MapEntry(
+                        MyData.fromJson(Map<String, dynamic>.from(key)),
+                        MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+                      ),
+                    ))
+                .toList(),
+            MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+          ),
+        ),
+        Map<dynamic, dynamic>.from(value).map(
+          (key, value) => MapEntry(
+            MyOtherData.fromJson(Map<String, dynamic>.from(key)),
+            MyData.fromJson(Map<String, dynamic>.from(value)),
+          ),
+        ),
+      ),
+    );
   }
 }

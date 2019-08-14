@@ -175,7 +175,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     final innerType = (field.type as ParameterizedType).typeArguments[0];
     final invokeMethod = selectInvokeMethod(innerType);
 
-    final resultMapped = mapResultToDart(innerType, false);
+    final resultMapped = mapFromDart(innerType, 'result', false);
 
     return '''
     
@@ -215,7 +215,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     final invokeParams = selectParamToInvokeMethod(method.parameters);
     final separator = invokeParams.isEmpty ? '' : ',';
 
-    final resultMapped = mapResultToDart(innerType, false);
+    final resultMapped = mapFromDart(innerType, 'result', false);
 
     return '''
             @override
@@ -282,77 +282,57 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
         type.isDartCoreNull;
   }
 
-  /// NOTE : When this method is used from EventChannel is need to set includeExtraCasting = true,
-  /// as receiveBroadcastStream() only emits dynamic and we need to change that to something
-  /// like a list, or map.
-  /// TODO : make this type mapping recursive to add support to things like List<List<MyData>> and Map<List<MyData>, List<MyOtherData>>
-  String mapResultToDart(DartType type, bool includeExtraCasting) {
+  String mapFromDart(DartType type, String variableName, bool needsMapping) {
     if (isCoreDartType(type)) {
-      return 'result';
-    } else if (type.isDartCoreList) {
-      final innerType = (type as ParameterizedType).typeArguments[0];
-      final extraCasting =
-          includeExtraCasting ? 'List.castFrom(result)' : 'result';
-      if (isCoreDartType(innerType)) {
-        return '$extraCasting';
-      } else {
-        return '''
-              $extraCasting
-                          .map((item) => Map<String, dynamic>.from(item))
-                          .map((item) => ${innerType.displayName}.fromJson(item)).toList()
-        
-        ''';
-      }
+      return variableName;
     }
+    if (type.isDartCoreList) {
+      final innerType = (type as ParameterizedType).typeArguments[0];
+
+      final mapping =
+          needsMapping ? 'List.castFrom($variableName)' : variableName;
+      if (isCoreDartType(innerType)) {
+        return mapping;
+      }
+      return '''
+                  $mapping
+                    .map((item) => ${mapFromDart(innerType, 'item', true)}).toList()        
+        ''';
+    }
+
     if (type.isDartCoreMap) {
       final keyType = (type as ParameterizedType).typeArguments[0];
       final valueType = (type as ParameterizedType).typeArguments[1];
 
       if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
-        return 'Map<${keyType.displayName}, ${valueType.displayName}>.from(result)';
+        return 'Map<${keyType.displayName}, ${valueType.displayName}>.from($variableName)';
       } else {
-        final key =
-            isCoreDartType(keyType) ? 'key' : 'Map<String, dynamic>.from(key)';
-        final value = isCoreDartType(valueType)
-            ? 'value'
-            : 'Map<String, dynamic>.from(value)';
+        final key = mapFromDart(keyType, 'key', true);
+        final value = mapFromDart(valueType, 'value', true);
 
-        final key2 = isCoreDartType(keyType)
-            ? 'key'
-            : '${keyType.displayName}.fromJson(key)';
-        final value2 = isCoreDartType(valueType)
-            ? 'value'
-            : '${valueType.displayName}.fromJson(value)';
         final kk = isCoreDartType(keyType) ? keyType.displayName : 'dynamic';
         final vk =
             isCoreDartType(valueType) ? valueType.displayName : 'dynamic';
-        final extraCasting =
-            includeExtraCasting ? 'Map<$kk, $vk>.from(result)' : 'result';
+
+        final mapping =
+            needsMapping ? 'Map<$kk, $vk>.from($variableName)' : variableName;
+
         return '''
-                  $extraCasting
-                            .map((key, value) => MapEntry(
-                                $key,
-                                $value,
-                              ),
-                            )
-                            .map((key, value) => MapEntry(
-                                $key2, 
-                                $value2,
-                              ),
-                            )
-                            
+                   $mapping
+                          .map((key, value) => MapEntry(
+                              $key,
+                              $value,
+                            ),
+                          ) 
              ''';
       }
-    } else {
-      if (includeExtraCasting) {
-        return '''
-        final item = Map<String, dynamic>.from(result);
-        ${type.displayName}.fromJson(item)''';
-      } else {
-        return '''
-        ${type.displayName}.fromJson(result)''';
-      }
     }
+    final mapping = needsMapping
+        ? 'Map<String, dynamic>.from($variableName)'
+        : variableName;
+    return '''
+        ${type.displayName}.fromJson($mapping)
+        ''';
   }
 
   /// TODO : make this type mapping recursive to add support to things like List<List<MyData>> and Map<List<MyData>, List<MyOtherData>>
@@ -552,7 +532,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
       final innerType = (field.type as ParameterizedType).typeArguments[0];
 
-      final result = mapResultToDart(innerType, true);
+      final result = mapFromDart(innerType, 'item', true);
 
       if (eventChannelName != null) {
         return '''
@@ -566,7 +546,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
           
             $platformOnly
           
-          return  _${field.displayName}.map((result){  return $result; });
+          return  _${field.displayName}.map((item){  return $result; });
         }
         
       ''';
