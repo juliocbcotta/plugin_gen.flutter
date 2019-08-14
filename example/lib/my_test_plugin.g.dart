@@ -15,32 +15,39 @@ class _$MyTestPlugin extends MyTestPlugin {
   static const EventChannel _counterEventChannel =
       const EventChannel('my event channel');
 
-  final _counter = _counterEventChannel.receiveBroadcastStream();
+  final Stream<dynamic> _counter =
+      _counterEventChannel.receiveBroadcastStream();
 
   @override
   Stream<Map<int, MyData>> get counter {
     return _counter.map((result) {
       return Map<int, dynamic>.from(result)
-          .map((key, value) => MapEntry(
-                key,
-                Map<String, dynamic>.from(value),
-              ))
-          .map((key, value) => MapEntry(
-                key,
-                MyData.fromJson(value),
-              ));
+          .map(
+            (key, value) => MapEntry(
+              key,
+              Map<String, dynamic>.from(value),
+            ),
+          )
+          .map(
+            (key, value) => MapEntry(
+              key,
+              MyData.fromJson(value),
+            ),
+          );
     });
   }
 
   @override
   Future<void> get startCounter async {
     final result = await _methodChannel.invokeMethod<void>('startCounter');
+
     return result;
   }
 
   @override
   Future<void> get stopCounter async {
     final result = await _methodChannel.invokeMethod<void>('stopCounter');
+
     return result;
   }
 
@@ -52,36 +59,42 @@ class _$MyTestPlugin extends MyTestPlugin {
 
     final result = await _methodChannel
         .invokeMethod<String>('failToReceiveStringOnAnythingOtherThanIOS');
+
     return result;
   }
 
   @override
   Future<String> get receiveString async {
     final result = await _methodChannel.invokeMethod<String>('receiveString');
+
     return result;
   }
 
   @override
   Future<void> get receiveVoid async {
     final result = await _methodChannel.invokeMethod<void>('receiveVoid');
+
     return result;
   }
 
   @override
   Future<Null> get receiveNull async {
     final result = await _methodChannel.invokeMethod<Null>('receiveNull');
+
     return result;
   }
 
   @override
   Future<int> get receiveInt async {
     final result = await _methodChannel.invokeMethod<int>('receiveInt');
+
     return result;
   }
 
   @override
   Future<double> get receiveDouble async {
     final result = await _methodChannel.invokeMethod<double>('receiveDouble');
+
     return result;
   }
 
@@ -89,6 +102,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   Future<MyData> get receiveMyData async {
     final result =
         await _methodChannel.invokeMapMethod<String, dynamic>('receiveMyData');
+
     return MyData.fromJson(result);
   }
 
@@ -96,6 +110,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   Future<List<String>> get receiveSimpleStringList async {
     final result = await _methodChannel
         .invokeListMethod<String>('receiveSimpleStringList');
+
     return result;
   }
 
@@ -103,6 +118,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   Future<List<int>> get receiveSimpleIntList async {
     final result =
         await _methodChannel.invokeListMethod<int>('receiveSimpleIntList');
+
     return result;
   }
 
@@ -110,6 +126,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   Future<List<MyData>> get receiveMyDataList async {
     final result =
         await _methodChannel.invokeListMethod<dynamic>('receiveMyDataList');
+
     return result
         .map((item) => Map<String, dynamic>.from(item))
         .map((item) => MyData.fromJson(item))
@@ -121,6 +138,7 @@ class _$MyTestPlugin extends MyTestPlugin {
     String str,
   ) async {
     final result = await _methodChannel.invokeMethod<String>('sendString', str);
+
     return result;
   }
 
@@ -133,6 +151,7 @@ class _$MyTestPlugin extends MyTestPlugin {
     final result = await _methodChannel.invokeMethod<String>(
         'sendMultipleDartTypes',
         <String, dynamic>{'str': str, 'number': number, 'floating': floating});
+
     return result;
   }
 
@@ -142,6 +161,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result = await _methodChannel.invokeMapMethod<String, dynamic>(
         'sendMyData', data.toJson());
+
     return MyData.fromJson(result);
   }
 
@@ -151,6 +171,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result =
         await _methodChannel.invokeListMethod<String>('sendStringList', list);
+
     return result;
   }
 
@@ -160,6 +181,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result = await _methodChannel.invokeListMethod<dynamic>(
         'sendMyDataList', list.map((item) => item.toJson()).toList());
+
     return result
         .map((item) => Map<String, dynamic>.from(item))
         .map((item) => MyData.fromJson(item))
@@ -182,6 +204,7 @@ class _$MyTestPlugin extends MyTestPlugin {
       'number': number,
       'floating': floating
     });
+
     return result;
   }
 
@@ -189,6 +212,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   Future<Map<double, String>> receiveSimpleMap() async {
     final result = await _methodChannel
         .invokeMapMethod<double, String>('receiveSimpleMap');
+
     return Map<double, String>.from(result);
   }
 
@@ -196,45 +220,60 @@ class _$MyTestPlugin extends MyTestPlugin {
   Future<Map<String, MyOtherData>> receiveSimpleKeyComplexValueMap() async {
     final result = await _methodChannel
         .invokeMapMethod<String, dynamic>('receiveSimpleKeyComplexValueMap');
+
     return result
-        .map((key, value) => MapEntry(
-              key,
-              Map<String, dynamic>.from(value),
-            ))
-        .map((key, value) => MapEntry(
-              key,
-              MyOtherData.fromJson(value),
-            ));
+        .map(
+          (key, value) => MapEntry(
+            key,
+            Map<String, dynamic>.from(value),
+          ),
+        )
+        .map(
+          (key, value) => MapEntry(
+            key,
+            MyOtherData.fromJson(value),
+          ),
+        );
   }
 
   @override
   Future<Map<MyData, String>> receiveComplexKeySimpleValueMap() async {
     final result = await _methodChannel
         .invokeMapMethod<dynamic, String>('receiveComplexKeySimpleValueMap');
+
     return result
-        .map((key, value) => MapEntry(
-              Map<String, dynamic>.from(key),
-              value,
-            ))
-        .map((key, value) => MapEntry(
-              MyData.fromJson(key),
-              value,
-            ));
+        .map(
+          (key, value) => MapEntry(
+            Map<String, dynamic>.from(key),
+            value,
+          ),
+        )
+        .map(
+          (key, value) => MapEntry(
+            MyData.fromJson(key),
+            value,
+          ),
+        );
   }
 
   @override
   Future<Map<MyData, MyOtherData>> receiveComplexMap() async {
     final result = await _methodChannel
         .invokeMapMethod<dynamic, dynamic>('receiveComplexMap');
+
     return result
-        .map((key, value) => MapEntry(
-              Map<String, dynamic>.from(key),
-              Map<String, dynamic>.from(value),
-            ))
-        .map((key, value) => MapEntry(
-              MyData.fromJson(key),
-              MyOtherData.fromJson(value),
-            ));
+        .map(
+          (key, value) => MapEntry(
+            Map<String, dynamic>.from(key),
+            Map<String, dynamic>.from(value),
+          ),
+        )
+        .map(
+          (key, value) => MapEntry(
+            MyData.fromJson(key),
+            MyOtherData.fromJson(value),
+          ),
+        );
   }
 
   @override
@@ -243,6 +282,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result = await _methodChannel.invokeMapMethod<String, String>(
         'sendSimpleMap', map);
+
     return Map<String, String>.from(result);
   }
 
@@ -252,16 +292,26 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result = await _methodChannel.invokeMapMethod<String, dynamic>(
         'sendSimpleKeyComplexValueMap',
-        map.map((key, value) => MapEntry(key, value.toJson())));
+        map.map(
+          (key, value) => MapEntry(
+            key,
+            value.toJson(),
+          ),
+        ));
+
     return result
-        .map((key, value) => MapEntry(
-              key,
-              Map<String, dynamic>.from(value),
-            ))
-        .map((key, value) => MapEntry(
-              key,
-              MyOtherData.fromJson(value),
-            ));
+        .map(
+          (key, value) => MapEntry(
+            key,
+            Map<String, dynamic>.from(value),
+          ),
+        )
+        .map(
+          (key, value) => MapEntry(
+            key,
+            MyOtherData.fromJson(value),
+          ),
+        );
   }
 
   @override
@@ -270,16 +320,26 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result = await _methodChannel.invokeMapMethod<dynamic, String>(
         'sendComplexKeySimpleValueMap',
-        map.map((key, value) => MapEntry(key.toJson(), value)));
+        map.map(
+          (key, value) => MapEntry(
+            key.toJson(),
+            value,
+          ),
+        ));
+
     return result
-        .map((key, value) => MapEntry(
-              Map<String, dynamic>.from(key),
-              value,
-            ))
-        .map((key, value) => MapEntry(
-              MyData.fromJson(key),
-              value,
-            ));
+        .map(
+          (key, value) => MapEntry(
+            Map<String, dynamic>.from(key),
+            value,
+          ),
+        )
+        .map(
+          (key, value) => MapEntry(
+            MyData.fromJson(key),
+            value,
+          ),
+        );
   }
 
   @override
@@ -288,16 +348,26 @@ class _$MyTestPlugin extends MyTestPlugin {
   ) async {
     final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
         'sendComplexMap',
-        map.map((key, value) => MapEntry(key.toJson(), value.toJson())));
+        map.map(
+          (key, value) => MapEntry(
+            key.toJson(),
+            value.toJson(),
+          ),
+        ));
+
     return result
-        .map((key, value) => MapEntry(
-              Map<String, dynamic>.from(key),
-              Map<String, dynamic>.from(value),
-            ))
-        .map((key, value) => MapEntry(
-              MyData.fromJson(key),
-              MyOtherData.fromJson(value),
-            ));
+        .map(
+          (key, value) => MapEntry(
+            Map<String, dynamic>.from(key),
+            Map<String, dynamic>.from(value),
+          ),
+        )
+        .map(
+          (key, value) => MapEntry(
+            MyData.fromJson(key),
+            MyOtherData.fromJson(value),
+          ),
+        );
   }
 
   @override
@@ -310,10 +380,26 @@ class _$MyTestPlugin extends MyTestPlugin {
     final result = await _methodChannel
         .invokeMethod<String>('sendMultipleMaps', <String, dynamic>{
       'map1': map1,
-      'map2': map2.map((key, value) => MapEntry(key, value.toJson())),
-      'map3': map3.map((key, value) => MapEntry(key.toJson(), value)),
-      'map4': map4.map((key, value) => MapEntry(key.toJson(), value.toJson()))
+      'map2': map2.map(
+        (key, value) => MapEntry(
+          key,
+          value.toJson(),
+        ),
+      ),
+      'map3': map3.map(
+        (key, value) => MapEntry(
+          key.toJson(),
+          value,
+        ),
+      ),
+      'map4': map4.map(
+        (key, value) => MapEntry(
+          key.toJson(),
+          value.toJson(),
+        ),
+      )
     });
+
     return result;
   }
 }

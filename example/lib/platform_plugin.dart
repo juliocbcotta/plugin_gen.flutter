@@ -4,11 +4,12 @@ import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 
 part 'platform_plugin.g.dart';
 
-@MethodCallPlugin(channelName: 'platform_channel_with_id/{id}')
+@FlutterPlugin()
 abstract class PlatformPlugin {
-  Future<String> platform();
+  @EventChannelStream(channelName: 'my event channel')
+  Stream<String> get platform;
 
-  static PlatformPlugin create(String id) {
-    return _$PlatformPlugin(id: id);
+  static PlatformPlugin create() {
+    return _$PlatformPlugin();
   }
 }

@@ -7,18 +7,18 @@ part of 'platform_plugin.dart';
 // **************************************************************************
 
 class _$PlatformPlugin extends PlatformPlugin {
-  final MethodChannel _methodChannel;
+  _$PlatformPlugin();
 
-  factory _$PlatformPlugin({@required String id}) {
-    final channelName = 'platform_channel_with_id/{id}'.replaceAll('{id}', id);
+  static const EventChannel _platformEventChannel =
+      const EventChannel('my event channel');
 
-    return _$PlatformPlugin.private(MethodChannel(channelName));
-  }
-  _$PlatformPlugin.private(this._methodChannel);
+  final Stream<dynamic> _platform =
+      _platformEventChannel.receiveBroadcastStream();
 
   @override
-  Future<String> platform() async {
-    final result = await _methodChannel.invokeMethod<String>('platform');
-    return result;
+  Stream<String> get platform {
+    return _platform.map((result) {
+      return result;
+    });
   }
 }

@@ -5,11 +5,12 @@ import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 
 part 'my_test_plugin.g.dart';
 
+@FlutterPlugin()
 @SupportedPlatforms(only: [
   SupportedPlatform.IOS,
   SupportedPlatform.Android,
 ])
-@MethodCallPlugin(channelName: "my channel name")
+@MethodChannelFutures(channelName: "my channel name")
 abstract class MyTestPlugin {
   /// This counter will emit a value every time the underlying platform do so.
   /// This is done using a static EventChannel.
