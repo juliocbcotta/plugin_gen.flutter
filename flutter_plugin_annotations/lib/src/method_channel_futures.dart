@@ -7,7 +7,8 @@ import 'package:meta/meta.dart';
 /// Example:
 ///
 /// ``` dart
-/// @MethodCallPlugin(channelName: "my channel name")
+/// @FlutterPlugin()
+/// @MethodChannelFutures(channelName: "my channel name")
 /// abstract class PlatformPlugin {
 ///  Future<String> platform();
 /// }
@@ -19,7 +20,8 @@ import 'package:meta/meta.dart';
 /// If the channelName has path replacements, i.e. '{id}', a factory with that path replacements will be generated.
 
 /// ``` dart
-/// @MethodCallPlugin(channelName: "my_channel_name/{id}")
+/// @FlutterPlugin()
+/// @MethodChannelFutures(channelName: "my_channel_name/{id}")
 /// abstract class PlatformPlugin {
 ///
 ///  Future<String> platform();
@@ -50,11 +52,11 @@ import 'package:meta/meta.dart';
 /// }
 ///```
 
-class MethodCallPlugin {
+class MethodChannelFutures {
   /// [MethodChannel] name.
   final String channelName;
 
-  const MethodCallPlugin({
+  const MethodChannelFutures({
     @required this.channelName,
   });
 }
