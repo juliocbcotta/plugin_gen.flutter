@@ -1,12 +1,13 @@
 import 'package:meta/meta.dart';
 
-/// This annotation class is going to be used to generate a concrete implementation of a plugin that has
-/// a [MethodChannel] instance.
-/// It should be applied in an abstract class and a non empty [channelName] should be provided.
-
+/// This annotation class is going to be used to generate instances of [MethodChannel] when applied in the same
+/// class as [FlutterPlugin] and have a non empty [MethodChannelFutures.channelName].
+///
 /// Example:
 ///
 /// ``` dart
+/// part 'platform_plugin.g.dart';
+///
 /// @FlutterPlugin()
 /// @MethodChannelFutures(channelName: "my channel name")
 /// abstract class PlatformPlugin {
@@ -16,10 +17,12 @@ import 'package:meta/meta.dart';
 /// See also:
 ///
 ///  * [https://pub.dev/packages/flutter_plugin_generator], counter part library to this one.
-
+///
 /// If the channelName has path replacements, i.e. '{id}', a factory with that path replacements will be generated.
-
-/// ``` dart
+///
+/// ```dart
+/// part 'platform_plugin.g.dart';
+///
 /// @FlutterPlugin()
 /// @MethodChannelFutures(channelName: "my_channel_name/{id}")
 /// abstract class PlatformPlugin {
@@ -32,6 +35,8 @@ import 'package:meta/meta.dart';
 /// Will generate:
 ///
 ///```dart
+/// part of 'platform_plugin.dart';
+///
 /// class _$PlatformPlugin extends PlatformPlugin {
 ///
 ///   final MethodChannel _methodChannel;

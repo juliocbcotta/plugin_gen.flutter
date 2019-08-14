@@ -21,7 +21,7 @@ import 'package:meta/meta.dart';
 ///  static const EventChannel _platformEventChannel =
 ///      const EventChannel('my event channel');
 ///
-///  final _platform = _platformEventChannel.receiveBroadcastStream();
+///  final Stream<dynamic> _platform = _platformEventChannel.receiveBroadcastStream();
 ///
 ///  @override
 ///  Stream<String> get platform {
