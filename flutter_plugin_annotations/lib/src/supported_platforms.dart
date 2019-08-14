@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 /// This annotation allows the developer to specify which platforms a method supports.
-/// When applied to a class together with [MethodCallPlugin], it will limit to which platforms this plugin
+/// When applied to a class together with [MethodChannelFutures], it will limit to which platforms this plugin
 /// will work. If applied to the class, but not to a method, it will not have any effect.
 /// If [SupportedPlatforms] is applied in the class and in it's methods, the [only] list in the class will work as filter
 /// for [SupportedPlatform.values] for the [only] list in the method.
@@ -11,11 +11,12 @@ import 'package:meta/meta.dart';
 /// Example:
 ///
 /// ``` dart
+/// @FlutterPlugin()
 /// @SupportedPlatforms(only: [
 ///   SupportedPlatform.IOS,
 ///   SupportedPlatform.Android,
 /// ])
-/// @MethodCallPlugin(channelName: "my channel name")
+/// @MethodChannelFutures(channelName: "my channel name")
 /// abstract class PlatformPlugin {
 ///
 ///  @SupportedPlatforms(only: [

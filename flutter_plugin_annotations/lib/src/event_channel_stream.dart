@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 /// For instance:
 ///
 ///```dart
-/// @MethodCallPlugin(channelName: 'platform channel')
+/// @FlutterPlugin()
 /// abstract class PlatformPlugin {
 ///
 ///  @EventChannelStream('my event channel')
