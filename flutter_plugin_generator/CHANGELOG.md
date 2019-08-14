@@ -1,11 +1,19 @@
 ## [0.0.7]
 
 - Updated analyzer to 0.37.1.
+- Improved generated code formatting.
+- Updated documentation.
 
+- **Breaking Change**
+  - New `@FlutterPlugin()` annotation should be placed at every plugin class, it is obligatory to write a plugin.
+  - `MethodCallPlugin` was renamed to `MethodChannelFutures`, this annotation is no longer obligatory to write a plugin.
+  This means you can have a plugin with only EventChannels.
+  - Having a declared `Stream<T>` field without an annotation `EventChannelStream` no longer raise an exception.
+  After thinking about flexibility I reached the conclusion that it could limit plugin developments.
 
 ## [0.0.6]
 
-- Added support to EventChannel using EventChannelStream annotation in fields and getters.
+- Added support to EventChannel using `EventChannelStream` annotation in fields and getters.
 - Added support to use fields and getters for MethodChannel calls.
 - Included README.md.
 - Updated documentation.
