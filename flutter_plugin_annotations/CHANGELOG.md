@@ -1,3 +1,9 @@
+##[0.1.0]
+
+- Included assert tests.
+**Breaking changes**
+- all annotations constructor parameters need to be != null, otherwise it will throw an exception.
+
 ## [0.0.7]
 
 - Updated documentation.

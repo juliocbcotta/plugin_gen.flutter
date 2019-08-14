@@ -63,5 +63,5 @@ class MethodChannelFutures {
 
   const MethodChannelFutures({
     @required this.channelName,
-  });
+  }) : assert(channelName != null);
 }

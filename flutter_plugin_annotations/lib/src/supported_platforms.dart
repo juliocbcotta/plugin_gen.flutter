@@ -30,7 +30,7 @@ import 'package:meta/meta.dart';
 class SupportedPlatforms {
   final List<SupportedPlatform> only;
 
-  const SupportedPlatforms({@required this.only});
+  const SupportedPlatforms({@required this.only}) : assert(only != null);
 }
 
 /// These names need to match Flutter Platform.is$
