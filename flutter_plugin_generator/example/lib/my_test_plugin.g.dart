@@ -38,6 +38,18 @@ class _$MyTestPlugin extends MyTestPlugin {
   }
 
   @override
+  Future<String> get failToReceiveStringOnAnythingOtherThanIOS async {
+    if (Platform.isAndroid)
+      throw UnsupportedError(
+          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Android.');
+
+    final result = await _methodChannel
+        .invokeMethod<String>('failToReceiveStringOnAnythingOtherThanIOS');
+
+    return result;
+  }
+
+  @override
   Future<void> get startCounter async {
     final result = await _methodChannel.invokeMethod<void>('startCounter');
 
@@ -47,18 +59,6 @@ class _$MyTestPlugin extends MyTestPlugin {
   @override
   Future<void> get stopCounter async {
     final result = await _methodChannel.invokeMethod<void>('stopCounter');
-
-    return result;
-  }
-
-  @override
-  Future<String> get failToReceiveStringOnAnythingOtherThanIOS async {
-    if (Platform.isAndroid)
-      throw UnsupportedError(
-          'Functionality failToReceiveStringOnAnythingOtherThanIOS is not available on Android.');
-
-    final result = await _methodChannel
-        .invokeMethod<String>('failToReceiveStringOnAnythingOtherThanIOS');
 
     return result;
   }

@@ -26,7 +26,7 @@ abstract class MyTestPlugin {
   @SupportedPlatforms(only: [
     SupportedPlatform.IOS,
   ])
-  Future<String> get failToReceiveStringOnAnythingOtherThanIOS;
+  Future<String> failToReceiveStringOnAnythingOtherThanIOS;
 
   Future<String> get receiveString;
 
