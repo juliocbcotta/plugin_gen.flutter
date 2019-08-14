@@ -1,3 +1,12 @@
+## [0.0.7]
+
+- Updated documentation.
+- Included example.
+
+**Breaking changes**
+- Added FlutterPlugin annotation.
+- Renamed `MethodCallPlugin` to `MethodChannelFutures`.
+
 ## [0.0.6]
 
 - Added EventChannelStream annotation.
