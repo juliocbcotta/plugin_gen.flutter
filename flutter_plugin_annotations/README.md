@@ -1,36 +1,47 @@
 flutter_plugin_annotations is part of the project [plugin_gen.flutter](https://github.com/BugsBunnyBR/plugin_gen.flutter/) and holds the annotations that should
 be placed in the `dependencies` bloc of your `pubspec.yaml`
 
-## TLDR
-| Annotation  | Class | Method | Field / getter | Imports |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
-| `MethodCallPlugin`  | Used to indicate that the abstract class represents a plugin. | Not applicable | Not applicable | `import 'package:flutter/services.dart';` |
-| `SupportedPlatforms` | When applied together with `MethodCallPlugin` will limit which platforms the plugin supports.  | When applied to a method will limit which platforms the method supports. | When applied to a field will limit which platforms the generated getter supports. | `import 'dart:io';`|
-| `EventChannelStream`| Not applicable | Not applicable | Applicable if the field/getter is of type `Stream<*>`, creates a EventChannel. | `import 'package:flutter/services.dart';` |
-
-
-## MethodCallPlugin
+## FlutterPlugin
 This annotation should be applied to abstract classes that represents a plugin.
 
-- As the annotated class will generate a part file that access flutter framework, you need to add the import
-`import 'package:flutter/services.dart';` to the top of your class file.
-
-- As the annotated class will generate a part file, you should add after the file imports `part '${MY_CLASS_FILE_NAME}.g.dart';` to make the project work.
-
-- The class should have abstract methods/fields/getters that return `Future<*>`s. Each method will be translated to a `channelMethod` invoke call.
-
-You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/example/lib/).
-
-### channelName
-This value will dictate if the generated plugin will have a `static const MethodChannel` or one `MethodChannel` per instance.
-
-If `channelName` has any String replacements, i.e `platform_channel_with_id/{id}`, the generated code will have a constructor with a String named parameter `id` that will be replaced
-in the given `channelName` when creating a new instance of the class. It may be useful when allocating native resources.
+- As the annotated class will generate a part file, you should add 
+after the file imports `part '${MY_CLASS_FILE_NAME}.g.dart';` to make the project work.
 
 For instance:
 
 ```dart
-@MethodCallPlugin(channelName: 'platform_channel_with_id/{id}')
+part 'platform_plugin.g.dart';
+
+@FlutterPlugin()
+abstract class PlatformPlugin {
+
+}
+```
+
+## MethodChannelFutures
+This annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
+of methods/fields and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
+
+- As the annotated class will generate a part file that access flutter framework, you need to add the import
+`import 'package:flutter/services.dart';` to the top of your class file.
+
+You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/example/lib/).
+
+### MethodChannelFutures.channelName
+This value will be used in the generated plugin.
+ If `channelName` has no path replacements:  The plugin will have a `static const MethodChannel` that will be shared
+ across all instances of the plugin.
+
+If `channelName` has any String replacements, i.e `platform_channel_with_id/{id}`, the generated plugin will have a constructor with a String named parameter `id` that will be replaced
+in the given String when creating a new instance of the class. This may be useful when allocating native resources.
+
+For instance:
+
+```dart
+part 'platform_plugin.g.dart';
+
+@FlutterPlugin()
+@MethodChannelFutures(channelName: 'method_channel_with_id/{id}')
 abstract class PlatformPlugin {
 
   Future<String> platform();
@@ -42,13 +53,23 @@ abstract class PlatformPlugin {
 ```
 
 ## EventChannelStream
-`EventChannelStream` should be applied to fields or getters of type `Stream<*>`. **It does not support methods or path replacements**. It will generated a `static const EventChannel` and a private `Stream<dynamic>` that will be reused for all readings done in a given field/getter.
+`EventChannelStream` should be applied to fields or getters of type `Stream<T>`. 
+
+- As the annotated class will generate a part file that access flutter framework, you need to add the import
+`import 'package:flutter/services.dart';` to the top of your class file.
+
+- **It's `channelName` does NOT support methods or path replacements**. 
+
+Each field/getter annotated with `EventChannelStream` will generate a new `static const EventChannel` 
+and a private `Stream<dynamic>` that will be reused for all readings done in a given field/getter.
 
 
 For instance:
 
 ```dart
-@MethodCallPlugin(channelName: 'platform channel')
+part 'platform_plugin.g.dart';
+
+@FlutterPlugin()
 abstract class PlatformPlugin {
 
   @EventChannelStream('my event channel')
@@ -60,10 +81,16 @@ abstract class PlatformPlugin {
 will generate:
 
 ```dart
+part of 'platform_plugin.dart';
+
+class _$PlatformPlugin extends PlatformPlugin {
+  
+  _$PlatformPlugin();
+  
   static const EventChannel _platformEventChannel =
       const EventChannel('my event channel');
 
-  final _platform = _platformEventChannel.receiveBroadcastStream();
+  final Stream<dynamic> _platform = _platformEventChannel.receiveBroadcastStream();
 
   @override
   Stream<String> get platform {
@@ -71,11 +98,11 @@ will generate:
       return retult;
     });
   }
+}
 ```
 
-
 ## SupportedPlatforms
-`SupportedPlatforms`, when applied to the same class as `MethodCallPlugin` will work as a filter when declaring more restrict usage in a method.
+`SupportedPlatforms`, when applied to the same class as `FlutterPlugin` will work as a filter when declaring more restrict usage in a method/field or getter.
 
 - As this annotation will generate code that relies in `dart:io`, you should add the import `import 'dart:io';` to the top of your class file.
 
@@ -83,13 +110,16 @@ Methods/fields/getters annotated with `SupportedPlatforms` with a non empty list
 
 For instance:
 ```dart
+part 'platform_plugin.g.dart';
+
+@FlutterPlugin()
 @SupportedPlatforms(
   only: [
     SupportedPlatform.IOS,
     SupportedPlatform.Android,
   ],
 )
-@MethodCallPlugin(channelName: 'platform_channel_with_id')
+@MethodChannelFutures(channelName: 'platform_channel_with_id')
 abstract class PlatformPlugin {
   @SupportedPlatforms(
     only: [SupportedPlatform.Android],
@@ -98,9 +128,11 @@ abstract class PlatformPlugin {
 }
 ```
 
-will generate
+will generate:
 
 ```dart
+part of 'platform_plugin.dart';
+  
   @override
   Future<String> platform() async {
     if (Platform.isIOS)
@@ -109,12 +141,16 @@ will generate
     final result = await _methodChannel.invokeMethod<String>('platform');
     return result;
   }
+ 
 ```
 
 but if you remove the annotation from the class
 
 ```dart
-@MethodCallPlugin(channelName: 'platform_channel_with_id')
+part of 'platform_plugin.dart';
+
+@FlutterPlugin()
+@MethodChannelFutures(channelName: 'platform_channel_with_id')
 abstract class PlatformPlugin {
   @SupportedPlatforms(
     only: [SupportedPlatform.Android],
@@ -124,7 +160,7 @@ abstract class PlatformPlugin {
 }
 ```
 
-will generate
+will generate:
 
 ```dart
   @override

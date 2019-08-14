@@ -29,10 +29,13 @@ You can watch the changes with:
 ```dart
 part 'platform_plugin.g.dart';
 
-@MethodCallPlugin(channelName: 'my channel name')
-abstract class PlatformPlugin {
+@FlutterPlugin()
+@MethodChannelFutures(channelName: 'my channel name')
+abstract class MyAwesomePlugin {
   
   Future<String> get platform;
+  
+  Future<void> sendData(MyData data);
   
   @EventChannelStream(channelName: 'my event channel name')
   Stream<MyData> get myDataStream;
@@ -45,7 +48,9 @@ abstract class PlatformPlugin {
 
 
 ## TODO
-- document code
 - annotation for EventChannel in methods
+- support background execution
+
 - tests
 - annotation SupportedPlatforms except
+- document code
