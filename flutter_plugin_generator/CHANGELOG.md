@@ -1,3 +1,7 @@
+## [0.0.7+1]
+
+- Removed example apk.
+
 ## [0.0.7]
 
 - Updated analyzer to 0.37.1.

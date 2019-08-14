@@ -1,6 +1,6 @@
 name: flutter_plugin_generator
 description: Flutter Plugin generator generates a plugin implementation for you.
-version: 0.0.7
+version: 0.0.7+1
 author: Júlio Cesar Bueno Cotta <juliocbcotta@gmail.com>
 homepage: https://github.com/BugsBunnyBR/plugin_gen.flutter
 
