@@ -1,7 +1,7 @@
 flutter_plugin_annotations is part of the project [plugin_gen.flutter](https://github.com/BugsBunnyBR/plugin_gen.flutter/) and holds the annotations that should
 be placed in the `dependencies` bloc of your `pubspec.yaml`
 
-## FlutterPlugin
+## @FlutterPlugin()
 This annotation should be applied to abstract classes that represents a plugin.
 
 - As the annotated class will generate a part file, you should add 
@@ -18,7 +18,7 @@ abstract class PlatformPlugin {
 }
 ```
 
-## MethodChannelFutures
+## @MethodChannelFutures()
 This annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
 of methods/fields and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
 
@@ -52,7 +52,7 @@ abstract class PlatformPlugin {
 }
 ```
 
-## EventChannelStream
+## @EventChannelStream()
 `EventChannelStream` should be applied to fields or getters of type `Stream<T>`. 
 
 - As the annotated class will generate a part file that access flutter framework, you need to add the import
@@ -101,7 +101,7 @@ class _$PlatformPlugin extends PlatformPlugin {
 }
 ```
 
-## SupportedPlatforms
+## @SupportedPlatforms()
 `SupportedPlatforms`, when applied to the same class as `FlutterPlugin` will work as a filter when declaring more restrict usage in a method/field or getter.
 
 - As this annotation will generate code that relies in `dart:io`, you should add the import `import 'dart:io';` to the top of your class file.

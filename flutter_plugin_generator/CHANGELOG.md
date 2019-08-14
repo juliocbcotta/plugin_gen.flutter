@@ -3,6 +3,7 @@
 - Updated analyzer to 0.37.1.
 - Improved generated code formatting.
 - Updated documentation.
+- Included example.
 
 - **Breaking Change**
   - New `@FlutterPlugin()` annotation should be placed at every plugin class, it is obligatory to write a plugin.

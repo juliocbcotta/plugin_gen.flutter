@@ -10,8 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_plugin_annotations:
-    path: ../../flutter_plugin_annotations
+  flutter_plugin_annotations: ^ 0.0.7
 
 dev_dependencies:
   flutter_test:
