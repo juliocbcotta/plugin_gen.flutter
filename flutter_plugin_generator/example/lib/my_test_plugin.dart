@@ -115,10 +115,19 @@ abstract class MyTestPlugin {
       mapOfMapIntIntAndMapStringString();
 
   Future<Map<Map<MyData, MyOtherData>, Map<MyOtherData, MyData>>>
-  mapOfMapMyDataMyOtherDataAndMapMyOtherDataMyData();
+      mapOfMapMyDataMyOtherDataAndMapMyOtherDataMyData();
 
-  Future<Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>, Map<MyOtherData, MyData>>>
-  mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData();
+  Future<
+          Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+              Map<MyOtherData, MyData>>>
+  receiveSuperComplexData();
+
+  Future<
+      Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+          Map<MyOtherData, MyData>>> sendSuperComplexData(
+      Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+              Map<MyOtherData, MyData>>
+          map);
 
   static MyTestPlugin create() {
     return _$MyTestPlugin();
@@ -134,15 +143,15 @@ class MyOtherData {
 
   @override
   String toString() {
-    return super.toString() + '\n otherData: $otherData';
+    return super.toString() + '\n other: $otherData';
   }
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'otherData': otherData};
+    return <String, dynamic>{'other': otherData};
   }
 
   factory MyOtherData.fromJson(Map<String, dynamic> map) {
-    return MyOtherData(otherData: map['otherData']);
+    return MyOtherData(otherData: map['other']);
   }
 }
 

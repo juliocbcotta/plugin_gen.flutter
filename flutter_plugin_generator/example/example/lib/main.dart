@@ -39,12 +39,35 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
         children: <Widget>[
           RaisedButton(
             onPressed: () async {
-              final d = await plugin.mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData();
+              final d = await plugin
+                  .receiveSuperComplexData();
               setState(() {
-                text = d.toString();
+                text = d.toString() + '\n\n from native';
               });
             },
             child: Text('receive my super complex map of map...'),
+          ),
+          RaisedButton(
+            onPressed: () async {
+              final data1 = MyData(data: "text1", value: MyEnum.VALUE_1);
+              final other = MyOtherData(otherData: "other text");
+              final map = {
+                {
+                  [
+                    {
+                      data1: other,
+                    }
+                  ]: other
+                }: {
+                  other: data1,
+                }
+              };
+              final d = await plugin.sendSuperComplexData(map);
+              setState(() {
+                text = d.toString() + '\n\nto native and back again';
+              });
+            },
+            child: Text('send my super complex map of map...'),
           ),
           StreamBuilder<Map<int, MyData>>(
               stream: plugin.counter,

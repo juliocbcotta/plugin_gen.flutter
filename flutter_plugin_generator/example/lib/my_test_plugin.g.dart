@@ -539,11 +539,69 @@ class _$MyTestPlugin extends MyTestPlugin {
 
   @override
   Future<
-          Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
-              Map<MyOtherData, MyData>>>
-      mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData() async {
+      Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+          Map<MyOtherData, MyData>>> receiveSuperComplexData() async {
+    final result = await _methodChannel
+        .invokeMapMethod<dynamic, dynamic>('receiveSuperComplexData');
+
+    return result.map(
+      (key, value) => MapEntry(
+        Map<dynamic, dynamic>.from(key).map(
+          (key, value) => MapEntry(
+            List.castFrom(key)
+                .map((item) => Map<dynamic, dynamic>.from(item).map(
+                      (key, value) => MapEntry(
+                        MyData.fromJson(Map<String, dynamic>.from(key)),
+                        MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+                      ),
+                    ))
+                .toList(),
+            MyOtherData.fromJson(Map<String, dynamic>.from(value)),
+          ),
+        ),
+        Map<dynamic, dynamic>.from(value).map(
+          (key, value) => MapEntry(
+            MyOtherData.fromJson(Map<String, dynamic>.from(key)),
+            MyData.fromJson(Map<String, dynamic>.from(value)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<
+      Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+          Map<MyOtherData, MyData>>> sendSuperComplexData(
+    Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+            Map<MyOtherData, MyData>>
+        map,
+  ) async {
     final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
-        'mapOfMapListMapMyDataMyOtherDataAndMyOtherDataAndMapMyOtherDataAndMyData');
+        'sendSuperComplexData',
+        map.map(
+          (key, value) => MapEntry(
+            key.map(
+              (key, value) => MapEntry(
+                key
+                    .map((item) => item.map(
+                          (key, value) => MapEntry(
+                            key.toJson(),
+                            value.toJson(),
+                          ),
+                        ))
+                    .toList(),
+                value.toJson(),
+              ),
+            ),
+            value.map(
+              (key, value) => MapEntry(
+                key.toJson(),
+                value.toJson(),
+              ),
+            ),
+          ),
+        ));
 
     return result.map(
       (key, value) => MapEntry(

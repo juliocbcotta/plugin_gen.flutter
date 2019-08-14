@@ -175,7 +175,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     final innerType = (field.type as ParameterizedType).typeArguments[0];
     final invokeMethod = selectInvokeMethod(innerType);
 
-    final resultMapped = mapFromDart(innerType, 'result', false);
+    final resultMapped = mapFromDynamic(innerType, 'result', false);
 
     return '''
     
@@ -212,10 +212,10 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
     final innerType = (method.returnType as ParameterizedType).typeArguments[0];
     final invokeMethod = selectInvokeMethod(innerType);
-    final invokeParams = selectParamToInvokeMethod(method.parameters);
+    final invokeParams = mapToDynamic(method.parameters);
     final separator = invokeParams.isEmpty ? '' : ',';
 
-    final resultMapped = mapFromDart(innerType, 'result', false);
+    final resultMapped = mapFromDynamic(innerType, 'result', false);
 
     return '''
             @override
@@ -282,7 +282,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
         type.isDartCoreNull;
   }
 
-  String mapFromDart(DartType type, String variableName, bool needsMapping) {
+  String mapFromDynamic(DartType type, String variableName, bool needsMapping) {
     if (isCoreDartType(type)) {
       return variableName;
     }
@@ -296,7 +296,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
       }
       return '''
                   $mapping
-                    .map((item) => ${mapFromDart(innerType, 'item', true)}).toList()        
+                    .map((item) => ${mapFromDynamic(innerType, 'item', true)}).toList()        
         ''';
     }
 
@@ -307,8 +307,8 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
       if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
         return 'Map<${keyType.displayName}, ${valueType.displayName}>.from($variableName)';
       } else {
-        final key = mapFromDart(keyType, 'key', true);
-        final value = mapFromDart(valueType, 'value', true);
+        final key = mapFromDynamic(keyType, 'key', true);
+        final value = mapFromDynamic(valueType, 'value', true);
 
         final kk = isCoreDartType(keyType) ? keyType.displayName : 'dynamic';
         final vk =
@@ -335,66 +335,68 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
         ''';
   }
 
-  /// TODO : make this type mapping recursive to add support to things like List<List<MyData>> and Map<List<MyData>, List<MyOtherData>>
-  String selectParamToInvokeMethod(List<ParameterElement> params) {
+  /// 0 -> ''
+  /// 1 ->
+  ///     dartCore  -> param
+  ///     List<T>   -> param.map((item) => item.toJson()).toList()
+  ///     Map<T, U> ->
+  ///                 <dartCore, dartCore> -> param
+  ///                 <dartCore, Class>    -> param.map((key, value) => MapEntry(key, value.toJson()))
+  ///     Class     -> param.toJson()
+  ///
+  /// 2..N ->
+  ///       param[i]
+  ///           dartCore -> param : param
+  ///           List<T>  -> param : param.map((item) => item.toJson()).toList()
+  ///           Map<T, U> ->
+  ///                 <dartCore, dartCore> -> param : param
+  ///                 <dartCore, Class>    -> param : param.map((key, value) => MapEntry(key, value.toJson()))
+  ///           Class     -> param : param.toJson()
+
+  String mapDartTypeToDynamic(DartType type, String param, bool needsPrefix) {
+    final prefixedParam = needsPrefix ? '\'$param\' : $param' : param;
+
+    if (isCoreDartType(type)) {
+      return prefixedParam;
+    }
+    if (type.isDartCoreList) {
+      final innerType = (type as ParameterizedType).typeArguments[0];
+      if (isCoreDartType(innerType)) {
+        return prefixedParam;
+      }
+      return '$prefixedParam.map((item) => ${mapDartTypeToDynamic(innerType, 'item', false)}).toList()';
+    }
+    if (type.isDartCoreMap) {
+      final keyType = (type as ParameterizedType).typeArguments[0];
+      final valueType = (type as ParameterizedType).typeArguments[1];
+      if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
+        return prefixedParam;
+      }
+      return ''' 
+               $prefixedParam.map((key, value) => 
+                    MapEntry(
+                      ${mapDartTypeToDynamic(keyType, 'key', false)}, 
+                      ${mapDartTypeToDynamic(valueType, 'value', false)},
+                    ),
+               )
+      ''';
+    }
+
+    return '$prefixedParam.toJson()';
+  }
+
+  String mapToDynamic(List<ParameterElement> params) {
     if (params.isEmpty) {
       return '';
-    } else if (params.length == 1) {
+    }
+    if (params.length == 1) {
       final param = params[0];
       final type = param.type;
-
-      if (isCoreDartType(type)) {
-        return param.displayName;
-      } else if (type.isDartCoreList) {
-        final innerType = (type as ParameterizedType).typeArguments[0];
-        final mapping = isCoreDartType(innerType)
-            ? ''
-            : '.map((item) => item.toJson()).toList()';
-
-        return '${param.displayName}$mapping';
-      } else if (type.isDartCoreMap) {
-        final keyType = (type as ParameterizedType).typeArguments[0];
-        final valueType = (type as ParameterizedType).typeArguments[1];
-
-        if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
-          return param.displayName;
-        } else {
-          final key = isCoreDartType(keyType) ? 'key' : 'key.toJson()';
-          final value = isCoreDartType(valueType) ? 'value' : 'value.toJson()';
-          return '${param.displayName}.map((key, value) => MapEntry($key, $value,),)';
-        }
-      } else {
-        return '${param.displayName}.toJson()';
-      }
+      return mapDartTypeToDynamic(type, param.displayName, false);
     } else {
       final map = params.map((param) {
         final type = param.type;
-
-        if (isCoreDartType(type)) {
-          return '\'${param.displayName}\': ${param.displayName}';
-        } else if (type.isDartCoreList) {
-          final innerType = (type as ParameterizedType).typeArguments[0];
-
-          final mapping = isCoreDartType(innerType)
-              ? ''
-              : '.map((item) => item.toJson()).toList()';
-
-          return '\'${param.displayName}\' :  ${param.displayName}$mapping';
-        } else if (type.isDartCoreMap) {
-          final keyType = (type as ParameterizedType).typeArguments[0];
-          final valueType = (type as ParameterizedType).typeArguments[1];
-
-          if (isCoreDartType(keyType) && isCoreDartType(valueType)) {
-            return '\'${param.displayName}\' : ' + param.displayName;
-          } else {
-            final key = isCoreDartType(keyType) ? 'key' : 'key.toJson()';
-            final value =
-                isCoreDartType(valueType) ? 'value' : 'value.toJson()';
-            return '\'${param.displayName}\' : ${param.displayName}.map((key, value) => MapEntry($key, $value,),)';
-          }
-        } else {
-          return '\'${param.displayName}\' : ${param.displayName}.toJson()';
-        }
+        return mapDartTypeToDynamic(type, param.displayName, true);
       }).join(', ');
 
       return '<String, dynamic>{$map}';
@@ -532,7 +534,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
       final innerType = (field.type as ParameterizedType).typeArguments[0];
 
-      final result = mapFromDart(innerType, 'item', true);
+      final result = mapFromDynamic(innerType, 'item', true);
 
       if (eventChannelName != null) {
         return '''
