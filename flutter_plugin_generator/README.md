@@ -149,6 +149,8 @@ Sample of allowed data types:
 
 `MyData`
 
+`MyEnum`
+
 `List<int>`
 
 `List<double>`

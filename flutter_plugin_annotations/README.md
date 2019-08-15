@@ -7,7 +7,7 @@ This annotation should be applied to abstract classes that represents a plugin.
 - As the annotated class will generate a part file, you should add 
 after the file imports `part '${MY_CLASS_FILE_NAME}.g.dart';` to make the project work.
 
-For instance:
+For instance, a file `platform_plugin.dart`, should have something like:
 
 ```dart
 part 'platform_plugin.g.dart';
@@ -19,20 +19,19 @@ abstract class PlatformPlugin {
 ```
 
 ## @MethodChannelFutures()
-This annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
-of methods/fields and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
+MethodChannelFutures` annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
+of methods, fields and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
 
 - As the annotated class will generate a part file that access flutter framework, you need to add the import
 `import 'package:flutter/services.dart';` to the top of your class file.
 
-You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/example/lib/).
+You can see a class example [here](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/example/lib/platform_plugin.dart).
 
 ### MethodChannelFutures.channelName
-This value will be used in the generated plugin.
- If `channelName` has no path replacements:  The plugin will have a `static const MethodChannel` that will be shared
+ If `MethodChannelFutures.channelName` has no path replacements:  The plugin will have a `static const MethodChannel` that will be shared
  across all instances of the plugin.
 
-If `channelName` has any String replacements, i.e `platform_channel_with_id/{id}`, the generated plugin will have a constructor with a String named parameter `id` that will be replaced
+If `MethodChannelFutures.channelName` has any String replacements, i.e `platform_channel_with_id/{id}`, the generated plugin will have a constructor with a String named parameter `id` that will be replaced
 in the given String when creating a new instance of the class. This may be useful when allocating native resources.
 
 For instance:
@@ -58,7 +57,7 @@ abstract class PlatformPlugin {
 - As the annotated class will generate a part file that access flutter framework, you need to add the import
 `import 'package:flutter/services.dart';` to the top of your class file.
 
-- **It's `channelName` does NOT support methods or path replacements**. 
+- **`EventChannelStream.channelName` does NOT support methods or path replacements**. 
 
 Each field/getter annotated with `EventChannelStream` will generate a new `static const EventChannel` 
 and a private `Stream<dynamic>` that will be reused for all readings done in a given field/getter.

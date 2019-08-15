@@ -1,3 +1,7 @@
+## [0.0.9]
+
+- Added support to serialize/deserialize enums.
+
 ## [0.0.8]
 
 - Serialization and deserialization of pretty much any combination of Lists, Maps and Classes (without generics).

@@ -126,6 +126,16 @@ class _$MyTestPlugin extends MyTestPlugin {
   }
 
   @override
+  Future<MyEnum> receiveEnum(
+    MyEnum e,
+  ) async {
+    final result = await _methodChannel.invokeMethod<String>(
+        'receiveEnum', describeEnum(e));
+
+    return MyEnum.values.firstWhere((item) => describeEnum(item) == result);
+  }
+
+  @override
   Future<String> sendString(
     String str,
   ) async {

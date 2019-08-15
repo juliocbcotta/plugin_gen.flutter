@@ -251,13 +251,15 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
   String selectInvokeMethod(DartType type) {
     if (isCoreDartType(type)) {
       return 'invokeMethod<${type.displayName}>';
-    } else if (type.isDartCoreList) {
+    }
+    if (type.isDartCoreList) {
       final innerType = (type as ParameterizedType).typeArguments[0];
       final inner =
           isCoreDartType(innerType) ? '${innerType.displayName}' : 'dynamic';
 
       return 'invokeListMethod<$inner>';
-    } else if (type.isDartCoreMap) {
+    }
+    if (type.isDartCoreMap) {
       final keyType = (type as ParameterizedType).typeArguments[0];
       final valueType = (type as ParameterizedType).typeArguments[1];
 
@@ -269,8 +271,18 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
       return 'invokeMapMethod<$key, $value>';
     }
-
+    if (isEnum(type)) {
+      return 'invokeMethod<String>';
+    }
     return 'invokeMapMethod<String, dynamic>';
+  }
+
+  bool isEnum(DartType type) {
+    if (type.element is ClassElement) {
+      final classElement = type.element as ClassElement;
+      return classElement.isEnum;
+    }
+    return false;
   }
 
   bool isCoreDartType(DartType type) {
@@ -327,6 +339,9 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
              ''';
       }
     }
+    if (isEnum(type)) {
+      return '${type.displayName}.values.firstWhere((item) => describeEnum(item) == $variableName)';
+    }
     final mapping = needsMapping
         ? 'Map<String, dynamic>.from($variableName)'
         : variableName;
@@ -381,7 +396,10 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
                )
       ''';
     }
-
+    if (isEnum(type)) {
+      final prefixedParam = needsPrefix ? '\'$param\' : ' : '';
+      return '${prefixedParam} describeEnum($param)';
+    }
     return '$prefixedParam.toJson()';
   }
 
