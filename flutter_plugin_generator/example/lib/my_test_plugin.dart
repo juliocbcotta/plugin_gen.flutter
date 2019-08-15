@@ -118,9 +118,8 @@ abstract class MyTestPlugin {
       mapOfMapMyDataMyOtherDataAndMapMyOtherDataMyData();
 
   Future<
-          Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
-              Map<MyOtherData, MyData>>>
-  receiveSuperComplexData();
+      Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+          Map<MyOtherData, MyData>>> receiveSuperComplexData();
 
   Future<
       Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,

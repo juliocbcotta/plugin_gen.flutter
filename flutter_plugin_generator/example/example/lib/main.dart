@@ -39,8 +39,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
         children: <Widget>[
           RaisedButton(
             onPressed: () async {
-              final d = await plugin
-                  .receiveSuperComplexData();
+              final d = await plugin.receiveSuperComplexData();
               setState(() {
                 text = d.toString() + '\n\n from native';
               });

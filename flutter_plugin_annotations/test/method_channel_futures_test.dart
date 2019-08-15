@@ -10,7 +10,8 @@ void main() {
       expect(annotation.channelName, 'some name');
     });
     test('Creating an MethodChannelFutures without channelNamel', () {
-      expect(() => MethodChannelFutures(channelName: null), throwsAssertionError);
+      expect(
+          () => MethodChannelFutures(channelName: null), throwsAssertionError);
     });
   });
 }

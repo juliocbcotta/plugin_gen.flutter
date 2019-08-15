@@ -50,7 +50,6 @@ abstract class MyAwesomePlugin {
 ## TODO
 - annotation for EventChannel in methods
 - support background execution
-
 - tests
 - annotation SupportedPlatforms except
 - document code

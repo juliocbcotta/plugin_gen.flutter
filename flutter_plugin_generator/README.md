@@ -135,8 +135,6 @@ class MyData {
 
 ## What are the supported data types?
 
-Maps and lists of primitive types and maps and lists of classes that don't use generics are allowed.
-
 Sample of allowed data types:
 
 `int`
@@ -165,22 +163,9 @@ Sample of allowed data types:
 
 `Map<MyData, MyOtherData>`
 
+`Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>, Map<MyOtherData, MyData>>` // Tested!
 
-### Lists of list or lists of map or maps of list... are **NOT** supported
 
-:exclamation: `List<List<*>>` 
-
-:exclamation: `List<Map<*,*>>`
-
-:exclamation: `Map<List<*>,*>`
-
-:exclamation: `Map<*,List<*>>`
-
-:exclamation: `Map<Map<*,*>,*>`
-
-:exclamation: `Map<*,Map<*,*>>`
-
-...
 
 ### Classes with generics are **NOT** supported
 

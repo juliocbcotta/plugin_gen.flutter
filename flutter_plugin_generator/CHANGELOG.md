@@ -1,3 +1,7 @@
+## [0.0.8]
+
+- Serialization and deserialization of pretty much any combination of Lists, Maps and Classes (without generics).
+
 ## [0.0.7+1]
 
 - Removed example apk.
