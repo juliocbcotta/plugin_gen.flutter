@@ -1,6 +1,6 @@
 ## [0.0.9]
 
-- Added support to serialize/deserialize enums.
+- Added support to serialize/deserialize enums and Sets.
 
 ## [0.0.8]
 

@@ -151,6 +151,8 @@ Sample of allowed data types:
 
 `MyEnum`
 
+`Set<int>`
+
 `List<int>`
 
 `List<double>`

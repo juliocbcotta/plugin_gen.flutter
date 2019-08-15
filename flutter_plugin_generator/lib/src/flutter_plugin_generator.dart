@@ -252,7 +252,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     if (isCoreDartType(type)) {
       return 'invokeMethod<${type.displayName}>';
     }
-    if (type.isDartCoreList) {
+    if (type.isDartCoreList || type.isDartCoreSet) {
       final innerType = (type as ParameterizedType).typeArguments[0];
       final inner =
           isCoreDartType(innerType) ? '${innerType.displayName}' : 'dynamic';
@@ -298,17 +298,20 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     if (isCoreDartType(type)) {
       return variableName;
     }
-    if (type.isDartCoreList) {
+    if (type.isDartCoreList || type.isDartCoreSet) {
       final innerType = (type as ParameterizedType).typeArguments[0];
 
       final mapping =
           needsMapping ? 'List.castFrom($variableName)' : variableName;
       if (isCoreDartType(innerType)) {
+        if (type.isDartCoreSet) {
+          return '$mapping.toSet()';
+        }
         return mapping;
       }
       return '''
                   $mapping
-                    .map((item) => ${mapFromDynamic(innerType, 'item', true)}).toList()        
+                    .map((item) => ${mapFromDynamic(innerType, 'item', true)}).to${type.name}()
         ''';
     }
 
@@ -374,9 +377,12 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     if (isCoreDartType(type)) {
       return prefixedParam;
     }
-    if (type.isDartCoreList) {
+    if (type.isDartCoreList || type.isDartCoreSet) {
       final innerType = (type as ParameterizedType).typeArguments[0];
       if (isCoreDartType(innerType)) {
+        if (type.isDartCoreSet) {
+          return '$prefixedParam.toList()';
+        }
         return prefixedParam;
       }
       return '$prefixedParam.map((item) => ${mapDartTypeToDynamic(innerType, 'item', false)}).toList()';

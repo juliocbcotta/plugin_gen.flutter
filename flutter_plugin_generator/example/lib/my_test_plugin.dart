@@ -12,7 +12,6 @@ part 'my_test_plugin.g.dart';
 ])
 @MethodChannelFutures(channelName: "my channel name")
 abstract class MyTestPlugin {
-
   Future<MyEnum> receiveEnum(MyEnum e);
 
   /// This counter will emit a value every time the underlying platform do so.
@@ -136,8 +135,7 @@ abstract class MyTestPlugin {
   }
 }
 
-enum MyEnum { VALUE_1, VALUE_2
-}
+enum MyEnum { VALUE_1, VALUE_2 }
 
 class MyOtherData {
   final String otherData;
