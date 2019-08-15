@@ -6,7 +6,7 @@ part of 'platform_plugin.dart';
 // FlutterPluginGenerator
 // **************************************************************************
 
-class _$PlatformPlugin extends PlatformPlugin {
+class _$PlatformPlugin implements PlatformPlugin {
   static const MethodChannel _methodChannel =
       const MethodChannel('platform_plugin');
 

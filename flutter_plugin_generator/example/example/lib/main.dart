@@ -17,7 +17,7 @@ class ExampleApp extends StatelessWidget {
 }
 
 class PluginControllerWidget extends StatefulWidget {
-  final MyTestPlugin plugin = MyTestPlugin.create();
+  final MyTestPlugin plugin = MyTestPlugin();
 
   @override
   _PluginControllerWidgetState createState() => _PluginControllerWidgetState();

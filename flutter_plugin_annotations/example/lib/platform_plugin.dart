@@ -10,7 +10,7 @@ part 'platform_plugin.g.dart';
 abstract class PlatformPlugin {
   Future<String> get platformVersion;
 
-  static PlatformPlugin create() {
+  factory PlatformPlugin() {
     return _$PlatformPlugin();
   }
 }

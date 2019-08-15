@@ -37,7 +37,7 @@ import 'package:meta/meta.dart';
 ///```dart
 /// part of 'platform_plugin.dart';
 ///
-/// class _$PlatformPlugin extends PlatformPlugin {
+/// class _$PlatformPlugin implements PlatformPlugin {
 ///
 ///   final MethodChannel _methodChannel;
 ///

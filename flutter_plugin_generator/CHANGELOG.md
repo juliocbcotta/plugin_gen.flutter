@@ -1,6 +1,12 @@
 ## [0.0.9]
 
 - Added support to serialize/deserialize enums and Sets.
+- Included header in the generated code.
+
+**Breaking changes**
+- The generated code will implement, not extend the class annotated with `@FlutterPlugin`. This allows
+the usage of a factory to instantiate the generated class from the annotated class.
+- Fields are no longer supported, always use getters instead.
 
 ## [0.0.8]
 

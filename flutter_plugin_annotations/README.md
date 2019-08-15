@@ -20,7 +20,7 @@ abstract class PlatformPlugin {
 
 ## @MethodChannelFutures()
 MethodChannelFutures` annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
-of methods, fields and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
+of methods and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
 
 - As the annotated class will generate a part file that access flutter framework, you need to add the import
 `import 'package:flutter/services.dart';` to the top of your class file.
@@ -45,22 +45,22 @@ abstract class PlatformPlugin {
 
   Future<String> platform();
 
-  static PlatformPlugin create(String id) {
+  factory PlatformPlugin(String id) {
     return _$PlatformPlugin(id: id);
   }
 }
 ```
 
 ## @EventChannelStream()
-`EventChannelStream` should be applied to fields or getters of type `Stream<T>`. 
+`EventChannelStream` should be applied to getters of type `Stream<T>`. 
 
 - As the annotated class will generate a part file that access flutter framework, you need to add the import
 `import 'package:flutter/services.dart';` to the top of your class file.
 
 - **`EventChannelStream.channelName` does NOT support methods or path replacements**. 
 
-Each field/getter annotated with `EventChannelStream` will generate a new `static const EventChannel` 
-and a private `Stream<dynamic>` that will be reused for all readings done in a given field/getter.
+Each getter annotated with `EventChannelStream` will generate a new `static const EventChannel` 
+and a private `Stream<dynamic>` that will be reused for all readings done in a given getter.
 
 
 For instance:
@@ -82,7 +82,7 @@ will generate:
 ```dart
 part of 'platform_plugin.dart';
 
-class _$PlatformPlugin extends PlatformPlugin {
+class _$PlatformPlugin implements PlatformPlugin {
   
   _$PlatformPlugin();
   
@@ -101,11 +101,11 @@ class _$PlatformPlugin extends PlatformPlugin {
 ```
 
 ## @SupportedPlatforms()
-`SupportedPlatforms`, when applied to the same class as `FlutterPlugin` will work as a filter when declaring more restrict usage in a method/field or getter.
+`SupportedPlatforms`, when applied to the same class as `FlutterPlugin` will work as a filter when declaring more restrict usage in a method or getter.
 
 - As this annotation will generate code that relies in `dart:io`, you should add the import `import 'dart:io';` to the top of your class file.
 
-Methods/fields/getters annotated with `SupportedPlatforms` with a non empty list of `SupportedPlatforms.only` will generate code to raise exceptions for each platform not listed in the `only` field.
+Methods/getters annotated with `SupportedPlatforms` with a non empty list of `SupportedPlatforms.only` will generate code to raise exceptions for each platform not listed in the `only` field.
 
 For instance:
 ```dart

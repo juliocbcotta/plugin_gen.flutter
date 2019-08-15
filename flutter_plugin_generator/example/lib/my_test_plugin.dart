@@ -28,7 +28,8 @@ abstract class MyTestPlugin {
   @SupportedPlatforms(only: [
     SupportedPlatform.IOS,
   ])
-  Future<String> failToReceiveStringOnAnythingOtherThanIOS;
+
+  Future<String> get failToReceiveStringOnAnythingOtherThanIOS;
 
   Future<String> get receiveString;
 
@@ -130,7 +131,7 @@ abstract class MyTestPlugin {
               Map<MyOtherData, MyData>>
           map);
 
-  static MyTestPlugin create() {
+  factory MyTestPlugin() {
     return _$MyTestPlugin();
   }
 }

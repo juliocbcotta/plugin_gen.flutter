@@ -17,7 +17,7 @@ part 'platform_plugin.g.dart';
 abstract class PlatformPlugin {
   Future<String> get platform;
   
-  static PlatformPlugin create() {
+  factory PlatformPlugin() {
     return _$PlatformPlugin();
   }
 }
@@ -29,7 +29,7 @@ will generate `platform_plugin.g.dart` :
 ```dart
 part of 'platform_plugin.dart';
 
-class _$PlatformPlugin extends PlatformPlugin {
+class _$PlatformPlugin implements PlatformPlugin {
   static const MethodChannel _methodChannel =
       const MethodChannel('my channel channel');
 
@@ -59,13 +59,13 @@ Lazy developer rule #1 : Write once by hand, automate, have a beer.
 
 ## What plugin_gen.flutter can do for you?
 
-It can use an abstract class and its methods/fields/getters to generate a concrete implementation for your plugin.
+It can use an abstract class and its methods/getters to generate a concrete implementation for your plugin.
 This project tries to find a good compromise between free modeling of your plugins and patterns that enables code generation
 while keeping the code simple and clean to read.
 
 ## Can I create EventChannel streams?
 
-Yes, you can! Annotate a field of type `Stream<T>` with `EventChannelStream`, 
+Yes, you can! Annotate a getter of type `Stream<T>` with `EventChannelStream`, 
 give the annotation a `channelName` and run the build runner command.
 
 
@@ -79,14 +79,14 @@ abstract class PlatformPlugin {
   @EventChannelStream(channelName: 'my event channel')
   Stream<String> get platform;
 
-  static PlatformPlugin create() {
+  factory PlatformPlugin() {
     return _$PlatformPlugin();
   }
 }
 
 ```
 
-## Why `MethodChannelFutures` is applied to a class and `EventChannelStream` to a field/getter?
+## Why `MethodChannelFutures` is applied to a class and `EventChannelStream` to a getter?
 
 It is a common pattern to have multiple methods writing and reading from the same `MethodChannel`, but
 not the same can be said to an `EventChannel` stream.
@@ -99,14 +99,6 @@ not the same can be said to an `EventChannel` stream.
 * Plugin class should be `abstract` and have the annotation `@FlutterPlugin()` applied.
 * Only one `MethodChannel` per class or one instance if path replacements are used. 
 [Read More](https://github.com/BugsBunnyBR/plugin_gen.flutter/blob/master/flutter_plugin_annotations/README.md)
-* A factory for the concrete implementation is not allowed at the moment.
-#### NOTE: Use an static method in the abstract plugin class to encapsulate the instantiation.
-
-```dart
-  static PlatformPlugin create() {
-    return _$PlatformPlugin();
-  }
-```
 
 ### Models (for return and for parameters)
 
