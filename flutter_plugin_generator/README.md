@@ -15,6 +15,9 @@ part 'platform_plugin.g.dart';
 @FlutterPlugin()
 @MethodChannelFutures(channelName: "my channel name")
 abstract class PlatformPlugin {
+  
+  PlatformPlugin();
+  
   Future<String> get platform;
   
   factory PlatformPlugin() {
@@ -27,23 +30,20 @@ will generate `platform_plugin.g.dart` :
 
 
 ```dart
-part of 'platform_plugin.dart';
+ part of 'platform_plugin.dart';
 
-class _$PlatformPlugin implements PlatformPlugin {
-  static const MethodChannel _methodChannel =
-      const MethodChannel('my channel channel');
+ class _$PlatformPlugin extends PlatformPlugin {
+   final MethodChannel _methodChannel = const MethodChannel('platform_plugin');
 
-  _$PlatformPlugin();
+   _$PlatformPlugin() : super();
 
-  @override
-  Future<String> get platform async {
-    
-    final result = await _methodChannel.invokeMethod<String>('platform');
-    
-    return result;
-  }
-}
+   @override
+   Future<String> get platformVersion async {
+     final result = await _methodChannel.invokeMethod<String>('platformVersion');
 
+     return result;
+   }
+ }
 ```
 
 The sample above may look silly, but it can save a lot of code when dealing with parameters and return types.
@@ -75,6 +75,8 @@ part 'platform_plugin.g.dart';
 
 @FlutterPlugin()
 abstract class PlatformPlugin {
+  
+  PlatformPlugin();
   
   @EventChannelStream(channelName: 'my event channel')
   Stream<String> get platform;

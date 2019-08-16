@@ -37,24 +37,19 @@ import 'package:meta/meta.dart';
 ///```dart
 /// part of 'platform_plugin.dart';
 ///
-/// class _$PlatformPlugin implements PlatformPlugin {
+/// class _$PlatformPlugin extends PlatformPlugin {
+///   final MethodChannel _methodChannel = const MethodChannel('platform_plugin');
 ///
-///   final MethodChannel _methodChannel;
-///
-///   factory _$PlatformPlugin({@required String id}) {
-///
-///     final channelName = 'platform_channel_with_id/{id}'.replaceAll('{id}', id);
-///
-///     return _$PlatformPlugin.private(MethodChannel(channelName));
-///   }
-///   _$PlatformPlugin.private(this._methodChannel);
+///   _$PlatformPlugin() : super();
 ///
 ///   @override
-///   Future<String> platform() async {
-///     final result = await _methodChannel.invokeMethod<String>('platform');
+///   Future<String> get platformVersion async {
+///     final result = await _methodChannel.invokeMethod<String>('platformVersion');
+///
 ///     return result;
 ///   }
 /// }
+///
 ///```
 
 class MethodChannelFutures {

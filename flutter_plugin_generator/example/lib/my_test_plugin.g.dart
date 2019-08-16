@@ -21,11 +21,10 @@ part of 'my_test_plugin.dart';
 /// ```
 /// **************************************************************************
 
-class _$MyTestPlugin implements MyTestPlugin {
-  static const MethodChannel _methodChannel =
-      const MethodChannel('my channel name');
+class _$MyTestPlugin extends MyTestPlugin {
+  final MethodChannel _methodChannel = const MethodChannel('my channel name');
 
-  _$MyTestPlugin();
+  _$MyTestPlugin() : super();
 
   static const EventChannel _counterEventChannel =
       const EventChannel('my event channel');
@@ -141,9 +140,7 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<MyEnum> receiveEnum(
-    MyEnum e,
-  ) async {
+  Future<MyEnum> receiveEnum(MyEnum e) async {
     final result = await _methodChannel.invokeMethod<String>(
         'receiveEnum', describeEnum(e));
 
@@ -151,20 +148,8 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<String> sendString(
-    String str,
-  ) async {
-    final result = await _methodChannel.invokeMethod<String>('sendString', str);
-
-    return result;
-  }
-
-  @override
   Future<String> sendMultipleDartTypes(
-    String str,
-    int number,
-    double floating,
-  ) async {
+      String str, int number, double floating) async {
     final result = await _methodChannel.invokeMethod<String>(
         'sendMultipleDartTypes',
         <String, dynamic>{'str': str, 'number': number, 'floating': floating});
@@ -173,9 +158,7 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<MyData> sendMyData(
-    MyData data,
-  ) async {
+  Future<MyData> sendMyData(MyData data) async {
     final result = await _methodChannel.invokeMapMethod<String, dynamic>(
         'sendMyData', data.toJson());
 
@@ -183,9 +166,7 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<List<String>> sendStringList(
-    List<String> list,
-  ) async {
+  Future<List<String>> sendStringList(List<String> list) async {
     final result =
         await _methodChannel.invokeListMethod<String>('sendStringList', list);
 
@@ -193,9 +174,7 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<List<MyData>> sendMyDataList(
-    List<MyData> list,
-  ) async {
+  Future<List<MyData>> sendMyDataList(List<MyData> list) async {
     final result = await _methodChannel.invokeListMethod<dynamic>(
         'sendMyDataList', list.map((item) => item.toJson()).toList());
 
@@ -205,13 +184,12 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<String> sendMultipleMixedTypes({
-    MyData data,
-    String str,
-    List<MyData> datas,
-    List<int> number,
-    double floating,
-  }) async {
+  Future<String> sendMultipleMixedTypes(
+      {MyData data,
+      String str,
+      List<MyData> datas,
+      List<int> number,
+      double floating}) async {
     final result = await _methodChannel
         .invokeMethod<String>('sendMultipleMixedTypes', <String, dynamic>{
       'data': data.toJson(),
@@ -272,9 +250,7 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<Map<String, String>> sendSimpleMap(
-    Map<String, String> map,
-  ) async {
+  Future<Map<String, String>> sendSimpleMap(Map<String, String> map) async {
     final result = await _methodChannel.invokeMapMethod<String, String>(
         'sendSimpleMap', map);
 
@@ -283,8 +259,7 @@ class _$MyTestPlugin implements MyTestPlugin {
 
   @override
   Future<Map<String, MyOtherData>> sendSimpleKeyComplexValueMap(
-    Map<String, MyOtherData> map,
-  ) async {
+      Map<String, MyOtherData> map) async {
     final result = await _methodChannel.invokeMapMethod<String, dynamic>(
         'sendSimpleKeyComplexValueMap',
         map.map(
@@ -304,8 +279,7 @@ class _$MyTestPlugin implements MyTestPlugin {
 
   @override
   Future<Map<MyData, String>> sendComplexKeySimpleValueMap(
-    Map<MyData, String> map,
-  ) async {
+      Map<MyData, String> map) async {
     final result = await _methodChannel.invokeMapMethod<dynamic, String>(
         'sendComplexKeySimpleValueMap',
         map.map(
@@ -325,8 +299,7 @@ class _$MyTestPlugin implements MyTestPlugin {
 
   @override
   Future<Map<MyData, MyOtherData>> sendComplexMap(
-    Map<MyData, MyOtherData> map,
-  ) async {
+      Map<MyData, MyOtherData> map) async {
     final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
         'sendComplexMap',
         map.map(
@@ -345,12 +318,10 @@ class _$MyTestPlugin implements MyTestPlugin {
   }
 
   @override
-  Future<String> sendMultipleMaps(
-    Map<String, String> map1, {
-    Map<String, MyData> map2,
-    Map<MyData, String> map3,
-    Map<MyData, MyOtherData> map4,
-  }) async {
+  Future<String> sendMultipleMaps(Map<String, String> map1,
+      {Map<String, MyData> map2,
+      Map<MyData, String> map3,
+      Map<MyData, MyOtherData> map4}) async {
     final result = await _methodChannel
         .invokeMethod<String>('sendMultipleMaps', <String, dynamic>{
       'map1': map1,
@@ -598,10 +569,9 @@ class _$MyTestPlugin implements MyTestPlugin {
   Future<
       Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
           Map<MyOtherData, MyData>>> sendSuperComplexData(
-    Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
-            Map<MyOtherData, MyData>>
-        map,
-  ) async {
+      Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
+              Map<MyOtherData, MyData>>
+          map) async {
     final result = await _methodChannel.invokeMapMethod<dynamic, dynamic>(
         'sendSuperComplexData',
         map.map(

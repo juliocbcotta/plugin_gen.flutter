@@ -14,6 +14,8 @@ part 'platform_plugin.g.dart';
 
 @FlutterPlugin()
 abstract class PlatformPlugin {
+ 
+  PlatformPlugin();
 
 }
 ```
@@ -43,6 +45,8 @@ part 'platform_plugin.g.dart';
 @MethodChannelFutures(channelName: 'method_channel_with_id/{id}')
 abstract class PlatformPlugin {
 
+  PlatformPlugin();
+  
   Future<String> platform();
 
   factory PlatformPlugin(String id) {
@@ -71,6 +75,8 @@ part 'platform_plugin.g.dart';
 @FlutterPlugin()
 abstract class PlatformPlugin {
 
+  PlatformPlugin();
+  
   @EventChannelStream('my event channel')
   Stream<String> get platform;
 
@@ -82,9 +88,9 @@ will generate:
 ```dart
 part of 'platform_plugin.dart';
 
-class _$PlatformPlugin implements PlatformPlugin {
+class _$PlatformPlugin extends PlatformPlugin {
   
-  _$PlatformPlugin();
+  _$PlatformPlugin() : super();
   
   static const EventChannel _platformEventChannel =
       const EventChannel('my event channel');
@@ -120,6 +126,9 @@ part 'platform_plugin.g.dart';
 )
 @MethodChannelFutures(channelName: 'platform_channel_with_id')
 abstract class PlatformPlugin {
+ 
+  PlatformPlugin();
+ 
   @SupportedPlatforms(
     only: [SupportedPlatform.Android],
   )
@@ -151,6 +160,9 @@ part of 'platform_plugin.dart';
 @FlutterPlugin()
 @MethodChannelFutures(channelName: 'platform_channel_with_id')
 abstract class PlatformPlugin {
+  
+  PlatformPlugin();
+  
   @SupportedPlatforms(
     only: [SupportedPlatform.Android],
   )

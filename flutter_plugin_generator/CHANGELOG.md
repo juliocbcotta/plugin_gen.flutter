@@ -4,8 +4,9 @@
 - Included header in the generated code.
 
 **Breaking changes**
-- The generated code will implement, not extend the class annotated with `@FlutterPlugin`. This allows
-the usage of a factory to instantiate the generated class from the annotated class.
+- MethodChannels are no longer static in any case.
+- The abstract plugin class will need to declare a constructor, 
+it can be as simple like `PlatformPlugin();`, but we need it. 
 - Fields are no longer supported, always use getters instead.
 
 ## [0.0.8]

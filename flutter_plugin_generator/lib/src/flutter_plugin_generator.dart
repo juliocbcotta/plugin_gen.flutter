@@ -6,7 +6,7 @@ import 'package:source_gen/source_gen.dart';
 
 /// This class reads the [FlutterPlugin] annotation and the classes where it is applied.
 /// If [MethodChannelFutures] is applied too, it will create a [MethodChannel] using the supplied
-/// [MethodChannelFutures.channelName] and a class with the prefix `_$`that implements the class
+/// [MethodChannelFutures.channelName] and a class with the prefix `_$`that extends the class
 /// where the annotation was used.
 ///
 /// Example:
@@ -31,16 +31,16 @@ import 'package:source_gen/source_gen.dart';
 /// **************************************************************************
 /// FlutterPluginGenerator
 /// **************************************************************************
-/// class _$PlatformPlugin implements PlatformPlugin {
-///   static const MethodChannel _methodChannel =
-///       const MethodChannel('my channel channel');
+/// part of 'platform_plugin.dart';
 ///
-///   _$PlatformPlugin();
+/// class _$PlatformPlugin extends PlatformPlugin {
+///   final MethodChannel _methodChannel = const MethodChannel('platform_plugin');
+///
+///   _$PlatformPlugin() : super();
 ///
 ///   @override
-///   Future<String> platform() async {
-///
-///     final result = await _methodChannel.invokeMethod<String>('platform');
+///   Future<String> get platformVersion async {
+///     final result = await _methodChannel.invokeMethod<String>('platformVersion');
 ///
 ///     return result;
 ///   }
@@ -74,7 +74,7 @@ import 'package:source_gen/source_gen.dart';
 /// FlutterPluginGenerator
 /// **************************************************************************
 ///
-/// class _$PlatformPlugin implements PlatformPlugin {
+/// class _$PlatformPlugin extends PlatformPlugin {
 ///  _$PlatformPlugin();
 ///
 ///  static const EventChannel _platformEventChannel =
@@ -159,8 +159,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     FieldElement field,
     List<SupportedPlatform> pluginPlatforms,
   ) {
-    final fieldPlatforms =
-        findSupportedPlatforms(field.getter.metadata);
+    final fieldPlatforms = findSupportedPlatforms(field.getter.metadata);
 
     final fieldName = field.displayName;
     final fieldType = field.type.displayName;
@@ -200,7 +199,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
     final methodName = method.displayName;
 
-    final methodParams = declareParams(method.parameters);
+    final methodParams = declareMethodParams(method.parameters);
     final methodReturnType = method.returnType.displayName;
 
     final platformsOnly = processSupportedPlatforms(
@@ -229,7 +228,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     ''';
   }
 
-  String declareParams(List<ParameterElement> parameters) {
+  String declareMethodParams(List<ParameterElement> parameters) {
     final buffer = StringBuffer();
     final firstNamed =
         parameters.firstWhere((param) => param.isNamed, orElse: () {
@@ -239,8 +238,15 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
       if (firstNamed == param) {
         buffer.writeln('{');
       }
-      buffer.write(' ${param.type.displayName}  ${param.displayName}, ');
+      if (param.isRequired) {
+        buffer.writeln('@required ');
+      }
+      buffer.write(' ${param.type.displayName}  ${param.displayName} ');
+      if (param != parameters.last) {
+        buffer.write(', ');
+      }
     });
+
     if (firstNamed != null) {
       buffer.writeln('}');
     }
@@ -462,7 +468,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     
     $header
     
-    class _\$$className implements $className {
+    class _\$$className extends $className {
         
       $factory
     
@@ -476,6 +482,14 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
   String createFactory(ClassElement rootElement,
       {String className, String methodChannelName}) {
+    final superConstructorParams =
+        declareMethodParams(rootElement.constructors.first.parameters);
+
+    final superConstructorArguments =
+        rootElement.constructors.first.parameters.map((param) {
+      return param.isNamed ? '${param.name} : ${param.name}' : param.name;
+    }).join(', ');
+
     if (methodChannelName == null) {
       return '''
         _\$$className();
@@ -488,7 +502,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
     final constructorParameters = groups
         .map((group) => group.replaceAll('{', '').replaceAll('}', ''))
-        .map((variable) => '@required String $variable')
+        .map((variable) => 'String $variable')
         .join(', ');
 
     final replacements = groups.map((group) {
@@ -496,28 +510,29 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
       return 'replaceAll(\'$group\', $variable)';
     }).join('.');
 
-    final oneChannelByInstance = constructorParameters.isNotEmpty;
-    final factory = oneChannelByInstance
+    final comma = superConstructorParams.isNotEmpty ? ',' : '';
+    final dot = replacements.isNotEmpty ? '.' : '';
+
+    final factory = replacements.isNotEmpty
         ? '''
       
         final MethodChannel _methodChannel;
+
+        _\$$className($constructorParameters $comma $superConstructorParams) : 
+              _methodChannel = MethodChannel(\'$methodChannelName\' $dot $replacements), 
+              super($superConstructorArguments);
        
-        factory _\$$className({$constructorParameters}) {
-       
-            final channelName = \'$methodChannelName\'.$replacements;
-          
-            return _\$$className.private(MethodChannel(channelName));
-        }
-        
-        _\$$className.private(this._methodChannel);
     '''
         : '''
-        
-         static const MethodChannel _methodChannel = const MethodChannel('$methodChannelName');
-        
-         _\$$className();
-        
-      ''';
+      
+        final MethodChannel _methodChannel = const MethodChannel(\'$methodChannelName\');
+
+        _\$$className($superConstructorParams) : 
+ 
+              super($superConstructorArguments);
+       
+    ''';
+
     return factory;
   }
 

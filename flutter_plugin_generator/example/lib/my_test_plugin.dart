@@ -12,12 +12,24 @@ part 'my_test_plugin.g.dart';
 ])
 @MethodChannelFutures(channelName: "my channel name")
 abstract class MyTestPlugin {
+
+  MyTestPlugin();
+
+  // for plugins that allows multiple instances.
+  factory MyTestPlugin.create() {
+    return _$MyTestPlugin();
+  }
+
+  // for Singletons
+  static final MyTestPlugin instance = _$MyTestPlugin();
+
   Future<MyEnum> receiveEnum(MyEnum e);
 
   /// This counter will emit a value every time the underlying platform do so.
   /// This is done using a static EventChannel.
   @EventChannelStream(channelName: 'my event channel')
   Stream<Map<int, MyData>> get counter;
+
 
   /// startCounter will trigger an action that will make counter start emitting
   Future<void> get startCounter;
@@ -28,7 +40,6 @@ abstract class MyTestPlugin {
   @SupportedPlatforms(only: [
     SupportedPlatform.IOS,
   ])
-
   Future<String> get failToReceiveStringOnAnythingOtherThanIOS;
 
   Future<String> get receiveString;
@@ -49,7 +60,7 @@ abstract class MyTestPlugin {
 
   Future<List<MyData>> get receiveMyDataList;
 
-  Future<String> sendString(String str);
+  Future<String> sendString(String str) {}
 
   Future<String> sendMultipleDartTypes(String str, int number, double floating);
 
@@ -130,10 +141,6 @@ abstract class MyTestPlugin {
       Map<Map<List<Map<MyData, MyOtherData>>, MyOtherData>,
               Map<MyOtherData, MyData>>
           map);
-
-  factory MyTestPlugin() {
-    return _$MyTestPlugin();
-  }
 }
 
 enum MyEnum { VALUE_1, VALUE_2 }

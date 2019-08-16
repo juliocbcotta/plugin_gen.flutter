@@ -8,9 +8,14 @@ part 'platform_plugin.g.dart';
 @FlutterPlugin()
 @MethodChannelFutures(channelName: 'platform_plugin')
 abstract class PlatformPlugin {
+
+  PlatformPlugin();
+
   Future<String> get platformVersion;
 
-  factory PlatformPlugin() {
+  factory PlatformPlugin.create(){
     return _$PlatformPlugin();
   }
 }
+
+
