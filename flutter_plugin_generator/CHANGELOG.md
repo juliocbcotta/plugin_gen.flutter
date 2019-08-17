@@ -2,11 +2,11 @@
 
 - Added support to serialize/deserialize enums and Sets.
 - Included header in the generated code.
+- Added support to `@OnMethodCall` annotation.
 
 **Breaking changes**
 - MethodChannels are no longer static in any case.
-- The abstract plugin class will need to declare a constructor, 
-it can be as simple like `PlatformPlugin();`, but we need it. 
+- The abstract plugin class will need to have a constructor, it can be as simple like `PlatformPlugin();`, but we need it. 
 - Fields are no longer supported, always use getters instead.
 
 ## [0.0.8]

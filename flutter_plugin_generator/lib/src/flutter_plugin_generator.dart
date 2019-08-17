@@ -170,15 +170,16 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     final methodName = method.displayName;
 
     final methodParams = declareMethodParams(method.parameters);
-    final nullCheckParams = method.parameters.map((param){
+    final nullCheckParams = method.parameters.map((param) {
       return ' ${param.displayName} == null ';
     }).join(' && ');
 
     final calls = method.parameters.map((param) {
-
       final func = param.type as FunctionType;
-      final returnType = (func.returnType as ParameterizedType).typeArguments[0];
-      final args = mapFromDynamic(func.parameters[0].type, 'call.arguments', true);
+      final returnType =
+          (func.returnType as ParameterizedType).typeArguments[0];
+      final args =
+          mapFromDynamic(func.parameters[0].type, 'call.arguments', true);
       final resultMapped = mapDartTypeToDynamic(returnType, 'result', false);
 
       return '''
