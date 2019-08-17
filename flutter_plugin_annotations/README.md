@@ -1,5 +1,5 @@
 flutter_plugin_annotations is part of the project [plugin_gen.flutter](https://github.com/BugsBunnyBR/plugin_gen.flutter/) and holds the annotations that should
-be placed in the `dependencies` bloc of your `pubspec.yaml`
+be placed in the `dependencies` block of your `pubspec.yaml`
 
 ## @FlutterPlugin()
 This annotation should be applied to abstract classes that represents a plugin.
