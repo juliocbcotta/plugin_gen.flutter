@@ -33,6 +33,8 @@ part 'platform_plugin.g.dart';
 @MethodChannelFutures(channelName: 'my channel name')
 abstract class MyAwesomePlugin {
   
+  MyAwesomePlugin(); // We need at least the default constructor.
+  
   Future<String> get platform;
   
   Future<void> sendData(MyData data);

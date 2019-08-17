@@ -117,9 +117,9 @@ How to register, you ask?
     widget.plugin.configure(onData: onData);
   }
   
-  Future<MyOtherData> onData(MyData onData) async {
+  Future<MyOtherData> onData(MyData data) async {
     setState(() {
-      onConfigureData = onData.toString();
+      onConfigureData = data.toString();
     });
 
     // This data goes to native side.
