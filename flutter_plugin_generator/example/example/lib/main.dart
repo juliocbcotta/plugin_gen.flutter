@@ -25,10 +25,38 @@ class PluginControllerWidget extends StatefulWidget {
 
 class _PluginControllerWidgetState extends State<PluginControllerWidget> {
   String text = '';
+  String onConfigureData = '';
+  final data1 = MyData(data: "text1", value: MyEnum.VALUE_1);
+  final other = MyOtherData(otherData: "other text");
 
   @override
   void initState() {
     super.initState();
+    widget.plugin.configure(onData: onData, onDataList: onDataList);
+  }
+
+  Future<MyOtherData> onData(MyData onData) async {
+    setState(() {
+      onConfigureData = onData.toString();
+    });
+
+    // This data goes to native side.
+    return MyOtherData(otherData: "some other data");
+  }
+
+  @override
+  void dispose() {
+    widget.plugin.configure(onData: null, onDataList: null);
+    super.dispose();
+  }
+
+  Future<Map<MyData, MyEnum>> onDataList(List<MyData> dataList) async {
+    setState(() {
+      onConfigureData = dataList.toString();
+    });
+
+    // This data goes to native side.
+    return {data1: MyEnum.VALUE_1};
   }
 
   @override
@@ -37,6 +65,9 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
+          Center(
+            child: Text(onConfigureData),
+          ),
           RaisedButton(
             onPressed: () async {
               final d = await plugin.receiveSuperComplexData();
@@ -48,8 +79,6 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
           ),
           RaisedButton(
             onPressed: () async {
-              final data1 = MyData(data: "text1", value: MyEnum.VALUE_1);
-              final other = MyOtherData(otherData: "other text");
               final map = {
                 {
                   [
@@ -275,7 +304,7 @@ class _PluginControllerWidgetState extends State<PluginControllerWidget> {
                 ),
                 RaisedButton(
                   onPressed: () async {
-                    final d = await plugin.sendString('hello world');
+                    final d = await plugin.sendString(str: 'hello world');
                     setState(() {
                       text = d;
                     });

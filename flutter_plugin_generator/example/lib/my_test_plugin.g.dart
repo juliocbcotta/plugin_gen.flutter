@@ -148,6 +148,13 @@ class _$MyTestPlugin extends MyTestPlugin {
   }
 
   @override
+  Future<String> sendString({@required String str}) async {
+    final result = await _methodChannel.invokeMethod<String>('sendString', str);
+
+    return result;
+  }
+
+  @override
   Future<String> sendMultipleDartTypes(
       String str, int number, double floating) async {
     final result = await _methodChannel.invokeMethod<String>(
@@ -621,5 +628,40 @@ class _$MyTestPlugin extends MyTestPlugin {
         ),
       ),
     );
+  }
+
+  @override
+  void configure(
+      {@required
+          Future<MyOtherData> Function(MyData) onData,
+      @required
+          Future<Map<MyData, MyEnum>> Function(List<MyData>) onDataList}) {
+    if (onData == null && onDataList == null) {
+      _methodChannel.setMethodCallHandler(null);
+    } else {
+      _methodChannel.setMethodCallHandler((call) async {
+        if (call.method == 'onData') {
+          final arguments =
+              MyData.fromJson(Map<String, dynamic>.from(call.arguments));
+          final result = await onData(arguments);
+          return result.toJson();
+        }
+
+        if (call.method == 'onDataList') {
+          final arguments = List.castFrom(call.arguments)
+              .map((item) => MyData.fromJson(Map<String, dynamic>.from(item)))
+              .toList();
+          final result = await onDataList(arguments);
+          return result.map(
+            (key, value) => MapEntry(
+              key.toJson(),
+              describeEnum(value),
+            ),
+          );
+        }
+
+        return null;
+      });
+    }
   }
 }

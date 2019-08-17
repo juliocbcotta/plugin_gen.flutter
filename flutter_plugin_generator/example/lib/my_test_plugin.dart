@@ -5,6 +5,10 @@ import 'package:flutter_plugin_annotations/flutter_plugin_annotations.dart';
 
 part 'my_test_plugin.g.dart';
 
+typedef Future<MyOtherData> OnData(MyData data);
+
+typedef Future<Map<MyData, MyEnum>> OnDataList(List<MyData> list);
+
 @FlutterPlugin()
 @SupportedPlatforms(only: [
   SupportedPlatform.IOS,
@@ -12,8 +16,10 @@ part 'my_test_plugin.g.dart';
 ])
 @MethodChannelFutures(channelName: "my channel name")
 abstract class MyTestPlugin {
-
   MyTestPlugin();
+
+  @OnMethodCall()
+  void configure({@required OnData onData, @required OnDataList onDataList});
 
   // for plugins that allows multiple instances.
   factory MyTestPlugin.create() {
@@ -29,7 +35,6 @@ abstract class MyTestPlugin {
   /// This is done using a static EventChannel.
   @EventChannelStream(channelName: 'my event channel')
   Stream<Map<int, MyData>> get counter;
-
 
   /// startCounter will trigger an action that will make counter start emitting
   Future<void> get startCounter;
@@ -60,7 +65,7 @@ abstract class MyTestPlugin {
 
   Future<List<MyData>> get receiveMyDataList;
 
-  Future<String> sendString(String str) {}
+  Future<String> sendString({@required String str});
 
   Future<String> sendMultipleDartTypes(String str, int number, double floating);
 

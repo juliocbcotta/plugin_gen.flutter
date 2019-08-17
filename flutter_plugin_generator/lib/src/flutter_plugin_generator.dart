@@ -144,6 +144,13 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     final futureFields = rootElement.fields
         .where((field) => field.isPublic && field.type.isDartAsyncFuture);
 
+    final onMethodCalls = rootElement.methods.where((method) {
+      return method.isAbstract &&
+          method.isPublic &&
+          method.returnType.isVoid &&
+          findAnnotation(method.metadata, 'OnMethodCall') != null;
+    });
+
     futureFields.forEach((field) {
       buffer.write(declareFutureGetter(field, pluginPlatforms));
     });
@@ -152,7 +159,55 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
       buffer.write(declareFutureMethod(method, pluginPlatforms));
     });
 
+    onMethodCalls.forEach((method) {
+      buffer.write(declareOnMethodCall(method));
+    });
+
     return buffer.toString();
+  }
+
+  String declareOnMethodCall(MethodElement method) {
+    final methodName = method.displayName;
+
+    final methodParams = declareMethodParams(method.parameters);
+    final nullCheckParams = method.parameters.map((param){
+      return ' ${param.displayName} == null ';
+    }).join(' && ');
+
+    final calls = method.parameters.map((param) {
+
+      final func = param.type as FunctionType;
+      final returnType = (func.returnType as ParameterizedType).typeArguments[0];
+      final args = mapFromDynamic(func.parameters[0].type, 'call.arguments', true);
+      final resultMapped = mapDartTypeToDynamic(returnType, 'result', false);
+
+      return '''
+      
+       if(call.method == '${param.displayName}'){
+         final arguments = $args;
+         final result = await ${param.displayName}(arguments);
+         return $resultMapped;
+       }
+       
+      ''';
+    }).join('\n');
+
+    return '''
+           
+            @override
+            void $methodName($methodParams) {
+                  if($nullCheckParams){
+                    _methodChannel.setMethodCallHandler(null);
+                  } else {
+                      _methodChannel.setMethodCallHandler((call) async {
+                         $calls
+                         
+                         return null;
+                        }
+                     );
+                   }
+            }
+    ''';
   }
 
   String declareFutureGetter(
@@ -432,13 +487,18 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
     }
   }
 
-  String findChannelName(
+  ElementAnnotation findAnnotation(
       List<ElementAnnotation> metadata, String annotationName) {
-    final annotation = metadata.firstWhere(
+    return metadata.firstWhere(
         (annotation) =>
             annotation.computeConstantValue().type.displayName ==
             annotationName,
         orElse: () => null);
+  }
+
+  String findChannelName(
+      List<ElementAnnotation> metadata, String annotationName) {
+    final annotation = findAnnotation(metadata, annotationName);
 
     return annotation == null
         ? null
