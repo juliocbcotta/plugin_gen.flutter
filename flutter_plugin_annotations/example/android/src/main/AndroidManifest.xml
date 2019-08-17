@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="flutter.pugin_gen.example.platform_plugin">
+</manifest>
