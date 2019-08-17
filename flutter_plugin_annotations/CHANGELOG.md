@@ -1,3 +1,9 @@
+## [0.0.9]
+
+- Added `OnMethodCall` annotation.
+- Updated documentation.
+
+
 ## [0.0.8]
 
 - Included assert tests.

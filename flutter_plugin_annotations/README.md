@@ -20,8 +20,9 @@ abstract class PlatformPlugin {
 }
 ```
 
+
 ## @MethodChannelFutures()
-MethodChannelFutures` annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
+`MethodChannelFutures` annotation should be placed at your plugin class together with `FlutterPlugin`, to enable the usage
 of methods and getters that return a `Future<T>` to have it's calls mapped into a `MethodChannel`.
 
 - As the annotated class will generate a part file that access flutter framework, you need to add the import
@@ -54,6 +55,85 @@ abstract class PlatformPlugin {
   }
 }
 ```
+
+
+## @OnMethodCall
+`OnMethodCall` is used to register a method as a callback at `MethodChannel.setMethodCallHandler`, so It needs to be applied to a plugin
+that uses `@MethodChannelFutures` in the class.
+
+ To make `OnMethodCall` work, the function where it is applied should:
+  - return `void`.
+  - Have all parameters as functions of signature `Future<T> Function(R variable)`.
+  Where T e R are any type supported by this project and `variable` will be used to map which method was called from the native side.
+
+For instance:
+
+```dart 
+part 'my_test_plugin.g.dart';
+
+typedef Future<MyOtherData> OnData(MyData data);
+
+@MethodChannelFutures(channelName: "my channel name")
+abstract class PlaftormPlugin {
+  
+  PlaftormPlugin();
+
+  @OnMethodCall()
+  void configure({@required OnData onData});
+
+}
+
+```
+
+Above we use a `typedef` to define a function `OnData` and use it as parameter to `configure` method.
+The generated code will use `onData` (The variable name in `configure` method) as a method name for the native side to call.
+So, when the the native side calls something like :
+
+
+```kotlin
+  
+  // kotlin
+  methodChannel.invokeMethod("onData", myData.toJson(), object : Result {
+      override fun error(p0: String?, p1: String?, p2: Any?) {}
+
+      override fun success(p0: Any?) {
+        val other = MyOtherData.fromJson(p0!!)
+        println(other)
+      }
+
+      override fun notImplemented() {}
+    })
+
+```
+
+It will call the method `OnData` if it was registered.
+
+How to register, you ask?
+```dart
+
+  @override
+  void initState() {
+    super.initState();
+    widget.plugin.configure(onData: onData);
+  }
+  
+  Future<MyOtherData> onData(MyData onData) async {
+    setState(() {
+      onConfigureData = onData.toString();
+    });
+
+    // This data goes to native side.
+    return MyOtherData(otherData: "some other data");;
+  }
+
+  @override
+  void dispose() {
+    widget.plugin.configure(onData: null);
+    super.dispose();
+  }
+
+```
+
 
 ## @EventChannelStream()
 `EventChannelStream` should be applied to getters of type `Stream<T>`. 
@@ -105,6 +185,7 @@ class _$PlatformPlugin extends PlatformPlugin {
   }
 }
 ```
+
 
 ## @SupportedPlatforms()
 `SupportedPlatforms`, when applied to the same class as `FlutterPlugin` will work as a filter when declaring more restrict usage in a method or getter.
@@ -201,3 +282,4 @@ will generate:
 ```
 
 If your plugin is meant to run just in Android and IOS and you want to have a cleaner code generated, use `SupportedPlatforms` in the class.
+
