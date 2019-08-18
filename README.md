@@ -5,14 +5,14 @@ A library to generate the flutter code for your plugin.
 
 pubspec.yaml of your plugin
 
-``` yaml
+```yaml
 dependencies:
-  flutter_plugin_annotations: ^0.0.8
+  flutter_plugin_annotations: ^0.0.9
     
     
 dev_dependencies:
   build_runner: ^1.0.0
-  flutter_plugin_generator: ^0.0.8
+  flutter_plugin_generator: ^0.0.9
 ```
 
 In your plugin folder
@@ -20,7 +20,7 @@ In your plugin folder
 `flutter pub run build_runner build --delete-conflicting-outputs`
 
 This will generate the concrete implementation of your annotated class.
-You can watch the changes with:
+You can watch the changes in files with:
 
 `flutter pub run build_runner watch --delete-conflicting-outputs`
 

@@ -120,12 +120,12 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
         : annotation.constantValue
             .getField('only')
             .toListValue()
-            .map((only) => SupportedPlatform.values.firstWhere(
-                (platform) => only.getField(platformName(platform)) != null))
+            .map((only) => SupportedPlatform.values.firstWhere((platform) =>
+                only.getField(describePlatform(platform)) != null))
             .toList();
   }
 
-  String platformName(SupportedPlatform platform) {
+  String describePlatform(SupportedPlatform platform) {
     return platform.toString().split('.').last;
   }
 
@@ -290,22 +290,47 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
         parameters.firstWhere((param) => param.isNamed, orElse: () {
       return null;
     });
+    final firstOptional = parameters
+        .firstWhere((param) => param.isOptionalPositional, orElse: () {
+      return null;
+    });
+    ParameterElement previous = null;
     parameters.forEach((param) {
+      if (previous != null && !param.isNamed && previous.isNamed) {
+        buffer.writeln('}');
+      }
+      if (previous != null &&
+          !param.isOptionalPositional &&
+          previous.isOptionalPositional) {
+        buffer.writeln(']');
+      }
+
       if (firstNamed == param) {
         buffer.writeln('{');
       }
-      if (param.isRequired) {
+      if (firstOptional == param) {
+        buffer.writeln('[');
+      }
+
+      if (findAnnotation(param.metadata, 'Required') != null) {
         buffer.writeln('@required ');
       }
       buffer.write(' ${param.type.displayName}  ${param.displayName} ');
+      if (param.defaultValueCode != null) {
+        buffer.write(' = ' + param.defaultValueCode);
+      }
       if (param != parameters.last) {
         buffer.write(', ');
       }
+      previous = param;
     });
-
-    if (firstNamed != null) {
+    if (previous != null && previous.isNamed) {
       buffer.writeln('}');
     }
+    if (previous != null && previous.isOptionalPositional) {
+      buffer.writeln(']');
+    }
+
     return buffer.toString();
   }
 
@@ -553,7 +578,9 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
     if (methodChannelName == null) {
       return '''
-        _\$$className();
+         _\$$className($superConstructorParams) : 
+ 
+              super($superConstructorArguments);
       ''';
     }
 
@@ -604,10 +631,10 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
 
     pluginPlatforms.forEach((platform) {
       if (!elementPlatforms.contains(platform)) {
-        final name = platformName(platform);
+        final platformName = describePlatform(platform);
         buffer.writeln('''
-        if (Platform.is$name)
-            throw UnsupportedError('Functionality $elementName is not available on $name.');
+        if (Platform.is$platformName)
+            throw UnsupportedError('Functionality $elementName is not available on $platformName.');
         ''');
       }
     });
@@ -641,6 +668,7 @@ class FlutterPluginGenerator extends GeneratorForAnnotation<FlutterPlugin> {
         
         static const EventChannel _${field.displayName}EventChannel = const EventChannel('$eventChannelName');
         
+        // To be able to share this stream across multiple subscribers we should call EventChannel.receiveBroadcastStream() only once.
         final Stream<dynamic> _${field.displayName} = _${field.displayName}EventChannel.receiveBroadcastStream();
         
         @override

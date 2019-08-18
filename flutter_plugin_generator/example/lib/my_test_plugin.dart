@@ -67,7 +67,7 @@ abstract class MyTestPlugin {
 
   Future<String> sendString({@required String str});
 
-  Future<String> sendMultipleDartTypes(String str, int number, double floating);
+  Future<String> sendMultipleDartTypes(String str, [int number = 0, double floating = 1]);
 
   Future<MyData> sendMyData(MyData data);
 

@@ -29,6 +29,7 @@ class _$MyTestPlugin extends MyTestPlugin {
   static const EventChannel _counterEventChannel =
       const EventChannel('my event channel');
 
+  // To be able to share this stream across multiple subscribers we should call EventChannel.receiveBroadcastStream() only once.
   final Stream<dynamic> _counter =
       _counterEventChannel.receiveBroadcastStream();
 
@@ -155,8 +156,8 @@ class _$MyTestPlugin extends MyTestPlugin {
   }
 
   @override
-  Future<String> sendMultipleDartTypes(
-      String str, int number, double floating) async {
+  Future<String> sendMultipleDartTypes(String str,
+      [int number = 0, double floating = 1]) async {
     final result = await _methodChannel.invokeMethod<String>(
         'sendMultipleDartTypes',
         <String, dynamic>{'str': str, 'number': number, 'floating': floating});

@@ -1,3 +1,8 @@
+## [0.0.10]
+
+- Enabled parsing optional positional and default values.
+
+
 ## [0.0.9]
 
 - Added support to serialize/deserialize enums and Sets.
