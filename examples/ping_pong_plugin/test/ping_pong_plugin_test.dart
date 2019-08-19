@@ -7,7 +7,7 @@ void main() {
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
+      return 'pong';
     });
   });
 
@@ -15,7 +15,7 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await PingPongPlugin.platformVersion, '42');
+  test('ping -> pong', () async {
+    expect(await PingPongPlugin.create().ping2(), 'pong');
   });
 }
